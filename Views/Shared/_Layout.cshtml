@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FastPMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FastPMS.styles.css" asp-append-version="true" /> 
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+          rel="stylesheet" />
+</head>
+<body>
+    <section class="sidebar">
+        <div class="nav-header">
+            <p class="logo">FAST PMS</p>
+            <i class="bx bx-menu btn-menu"></i>
+        </div>
+        <ul class="nav-links">
+            <li>
+                <i class="bx bx-search search-btn"></i>
+                <input type="text" placeholder="search..." />
+                <span class="tooltip">Search</span>
+            </li>
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt-2"></i>
+                    <span class="title">Home</span>
+                </a>
+                <span class="tooltip">Home</span>
+            </li>
+            <li>
+                <a asp-controller="AdminProject" asp-action="CreateProject">
+                    <i class='bx bx-folder-plus'></i>
+                    <span class="title">Create Project</span>
+                </a>
+                <span class="tooltip">Create Project</span>
+            </li> 
+            <li>
+                <a asp-for="Index">
+                    <i class='bx bx-task'></i>
+                    <span class="title">Add Task</span>
+                </a>
+                <span class="tooltip">Add Task</span>
+            </li> 
+            <li>
+                <a asp-for="Index">
+                    <i class='bx bx-add-to-queue'></i>
+                    <span class="title">Add Sub-Task</span>
+                </a>
+                <span class="tooltip">Add Sub-Task</span>
+            </li> 
+            <li>
+                <a asp-action="AllProject" asp-controller="AdminProject">
+                    <i class='bx bx-folder-open'></i>
+                    <span class="title">All Projects</span>
+                </a>
+                <span class="tooltip">All Projects</span>
+            </li>
+            <li>
+                <a asp-controller="AdminProject" asp-action="AddDev">
+                    <i class='bx bx-user-plus'></i>
+                    <span class="title">Add Developer</span>
+                </a>
+                <span class="tooltip">Create Developer</span>
+            </li>
+            <li>
+                <a href="#">
+                    <i class='bx bxl-microsoft-teams'></i>
+                    <span class="title">Create Team</span>
+                </a>
+                <span class="tooltip">Create Team</span>
+            </li>
+        </ul>
+        <div class="theme-wrapper">
+            <i class="bx bxs-moon theme-icon"></i>
+            <p>Dark Theme</p>
+            <div class="theme-btn">
+                <span class="theme-ball"></span>
+            </div>
+        </div> 
+
+    </section>
+    <section class="home">
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+                <div class="text-center fixed-bottom ">
+                    <h6>&copy; 2024 - Shahadat Hossain</h6>
+                </div>
+            </main>
+        </div>
+    </section>
+
+   
+
+    
+
+    <script>
+        const btn_menu = document.querySelector(".btn-menu");
+        const side_bar = document.querySelector(".sidebar");
+
+        btn_menu.addEventListener("click", function () {
+          side_bar.classList.toggle("expand");
+          changebtn();
+        });
+
+        function changebtn() {
+          if (side_bar.classList.contains("expand")) {
+            btn_menu.classList.replace("bx-menu", "bx-menu-alt-right");
+          } else {
+            btn_menu.classList.replace("bx-menu-alt-right", "bx-menu");
+          }
+        }
+
+        const btn_theme = document.querySelector(".theme-btn");
+        const theme_ball = document.querySelector(".theme-ball");
+
+        const localData = localStorage.getItem("theme");
+
+        if (localData == null) {
+          localStorage.setItem("theme", "light");
+        }
+
+        if (localData == "dark") {
+          document.body.classList.add("dark-mode");
+          theme_ball.classList.add("dark");
+        } else if (localData == "light") {
+          document.body.classList.remove("dark-mode");
+          theme_ball.classList.remove("dark");
+        }
+
+        btn_theme.addEventListener("click", function () {
+          document.body.classList.toggle("dark-mode");
+          theme_ball.classList.toggle("dark");
+          if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("theme", "dark");
+          } else {
+            localStorage.setItem("theme", "light");
+          }
+        });
+    </script>
+   
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

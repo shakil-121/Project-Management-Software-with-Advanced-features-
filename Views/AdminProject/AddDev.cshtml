@@ -1,0 +1,106 @@
+﻿@model FastPMS.Models.Domain.Developer
+
+<div class="container">
+    <h2 class="mt-5"><i class='bx bxs-user-plus'></i> Add New Developer</h2>
+
+    <form method="post" asp-controller="AdminProject" asp-action="AddDev" enctype="multipart/form-data">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="Role" class="control-label"></label>
+            <select asp-for="Role" class="form-control">
+                <option value="Junior Frontend Developer">Junior Frontend Developer</option>
+                <option value="Senior Frontend Developer">Senior Frontend Developer</option>
+                <option value="Junior Backend Developer">Junior Backend Developer</option>
+                <option value="Senior Backend Developer">Senior Backend Developer</option>
+                <option value="Junior UI/UX Designer">Junior UI/UX Designer</option>
+                <option value="Senior UI/UX Designer">Senior UI/UX Designer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Junior DevOps Engineer">Junior DevOps Engineer</option>
+                <option value="Senior DevOps Engineer">Senior DevOps Engineer</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Junior Data Scientist">Junior Data Scientist</option>
+                <option value="Senior Data Scientist">Senior Data Scientist</option>
+                <option value="Project Manager">Project Manager</option>
+                <option value="Quality Assurance Engineer">Quality Assurance Engineer</option>
+                <option value="System Administrator">System Administrator</option>
+                <option value="Database Administrator">Database Administrator</option>
+                <option value="Network Engineer">Network Engineer</option>
+                <option value="Security Engineer">Security Engineer</option>
+                <option value="Mobile Developer">Mobile Developer</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="Business Analyst">Business Analyst</option>
+                <option value="Scrum Master">Scrum Master</option>
+                <option value="Tester">Tester</option>
+                <option value="Technical Support Engineer">Technical Support Engineer</option>
+                <option value="Administrator">Administrator</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="PhoneNumber" class="control-label"></label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="Department" class="control-label"></label>
+            <select asp-for="Department" class="form-control">
+                <option value="">Select Department</option>
+                <option value="Software Engineering">Software Engineering</option>
+                <option value="IT Support">IT Support</option>
+                <option value="HR">HR</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Sales">Sales</option>
+                <option value="Finance">Finance</option>
+                <option value="Operations">Operations</option>
+                <option value="UI/UX Design">UI/UX Design</option>
+                <option value="Data Science">Data Science</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Product Management">Product Management</option>
+            </select>
+            <span asp-validation-for="Department" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="DateOfJoining" class="control-label"></label>
+            <input asp-for="DateOfJoining" class="form-control" type="date" />
+            <span asp-validation-for="DateOfJoining" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="IsActive" class="control-label"></label>
+            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+            <span asp-validation-for="IsActive" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <label asp-for="ImageFile" class="control-label"></label>
+            <input asp-for="ImageFile" class="form-control-file" type="file" />
+            <span asp-validation-for="ImageFile" class="text-danger"></span>
+        </div>
+        <br>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>

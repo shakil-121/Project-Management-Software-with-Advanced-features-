@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Sidebar Menu with Dark/Light Mode</title>
+    <link rel="stylesheet" href="~/css/StyleSheet.css"> 
+    <script defer src="script.js"></script>
+</head>
+<body> 
+    <nav class="navbar navbar-expand-lg mt-2">
+        <div class="container">
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarButtonsExample"
+                    aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarButtonsExample">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <h2><i class='bx bx-analyse'></i>DashBoard</h2>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center ms-auto">
+                    <button type="button" class="btn btn-primary me-3">
+                        Login<i class='bx bx-log-in'></i>
+                    </button>
+                    <button type="button" class="btn btn-dark me-3">
+                        Sign-up 
+                    </button>
+                    <a
+                       href="https://github.com"
+                       role="button" class="fs-2">
+                        <i class='bx bxl-github'></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+   <div class="d-flex justify-content-center mb-3">
+        <img src="~/images/pms-logo.png" style="height:150px; width:500px" alt="Alternate Text" />
+   </div>
+
+
+    <div class="mt-4">
+        <div class="card bg-primary text-white shadow mb-3">
+            <div class="card-body">
+                <h5 class="card-title"><i class='bx bxs-folder'></i> Total Projects</h5>
+                <p class="card-text text-light">@ViewBag.TotalProjectsCount Projects</p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-light shadow mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><i class='bx bx-radio-circle-marked'></i> Not Started</h5>
+                    <p class="card-text">@ViewBag.NotStartedCount Projects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><i class='bx bxs-caret-up-circle'></i> In Progress</h5>
+                    <p class="card-text">@ViewBag.InProgressCount Projects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning shadow mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><i class='bx bx-stop-circle'></i> On Hold</h5>
+                    <p class="card-text">@ViewBag.OnHoldCount Projects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 ps-3">
+            <div class="card bg-success shadow text-white mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><i class='bx bx-check-square'></i>Completed</h5>
+                    <p class="card-text">@ViewBag.CompletedCount Projects</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="~/js/SideBar.js"></script>
+
+</html>
+

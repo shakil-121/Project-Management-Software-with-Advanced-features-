@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Edit Page";
+}
+@model FastPMS.Models.ViewModel.EditProjectRequest
+
+@* Project create  *@ 
+      <div class="container mt-5">
+    <h2>Update Existing Project</h2>
+    <form method="post">
+        <!-- Project ID -->
+        <div class="form-group pt-3">
+            <label for="ProjectTitle">Project ID</label>
+            <input asp-for="ProjectId" type="text" class="form-control" id="ProjectId" name="ProjectId" placeholder="Enter project title" readonly>
+        </div>
+
+        <!-- Project Title -->
+        <div class="form-group pt-3">
+            <label for="ProjectTitle">Project Title</label>
+            <input asp-for="ProjectTitle" type="text" class="form-control" id="ProjectTitle" name="ProjectTitle" placeholder="Enter project title" required>
+        </div>
+
+        <!-- Project Description -->
+        <div class="form-group pt-3">
+            <label for="ProjectDescription">Project Description</label>
+            <textarea asp-for="ProjectDescription" class="form-control" id="ProjectDescription" name="ProjectDescription" rows="3" placeholder="Enter project descripton" redquired></textarea>
+        </div>
+
+        <!-- Stack (Select) -->
+        <div class="form-group pt-3">
+            <label for="Stack">Technology Stack</label>
+            <select asp-for="Stack" class="form-control" id="Stack" name="Stack" required>
+                <option value="">Select Stack</option>
+                <option value="MERN">MERN</option>
+                <option value="PHP">PHP</option>
+                <option value="ASP.NET">ASP.NET</option>
+                <option value="Python">Python</option>
+            </select>
+        </div>
+
+        <div class="d-flex pt-3">
+            <!-- Start Date -->
+            <div class="form-group">
+                <label for="StartDate">Start Date</label>
+                <input asp-for="StartDate" type="date" class="form-control" id="StartDate" name="StartDate" required>
+            </div>
+
+            <!-- End Date -->
+            <div class="form-group ps-3">
+                <label for="EndDate">End Date</label>
+                <input asp-for="EndDate" type="date" class="form-control" id="EndDate" name="EndDate" required>
+            </div>
+
+            <!-- Status -->
+            <div class="ps-3">
+                <label for="Status">Status</label>
+                <select class="form-control" id="Status" name="Status" asp-for="Status" required>
+                    <option value="">Select Status</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="On hold">On hold</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button  class="btn btn-primary mt-3">Update Project <i class='bx bxs-folder-plus'></i></button> 
+    </form>
+</div>
