@@ -1,0 +1,43 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+﻿.account-container {
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat-y;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.account-box {
+    background-color: white;
+    padding: 35px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgb(58 0 255 / 30%);
+    max-width: 400px;
+    width: 100%;
+    opacity: .9;
+    margin: auto;
+    margin-top: 50px;
+} 
+shadow__btn {
+  background:#0d6efd;
+  padding: 10px 20px;
+  border: none;
+  font-size: 25px;
+  color: #fff;
+  border-radius: 7px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: 0.5s;
+  transition-property: box-shadow; 
+  color:white;
+}
+
+.shadow__btn {
+    background: #0d6efd;
+}
+
