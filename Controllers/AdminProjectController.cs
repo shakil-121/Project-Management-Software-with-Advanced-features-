@@ -1,7 +1,10 @@
 ﻿using FastPMS.Data;
 using FastPMS.Models.Domain;
 using FastPMS.Models.ViewModel;
+using FastPMS.Repositories;
+using FastPMS.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.IO;
 using System.Linq;
@@ -11,11 +14,14 @@ namespace FastPMS.Controllers
 {
     public class AdminProjectController : Controller
     {
-        private readonly PmsDbContext PMSDbContext;
+        private readonly ProjectRepository projectRepository;
+        private readonly DeveloperRepository developerRepository;
 
-        public AdminProjectController(PmsDbContext pmsDbContext)
+        // Combine both dependencies into a single constructor
+        public AdminProjectController(IProjectRepository projectRepository, IDeveloperRepository developerRepository)
         {
-            this.PMSDbContext = pmsDbContext;
+            this.projectRepository = (ProjectRepository?)projectRepository;
+            this.developerRepository = (DeveloperRepository?)developerRepository;
         }
 
         [HttpGet]
@@ -25,7 +31,7 @@ namespace FastPMS.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProject(CreateProjectRequest createProjectRequest)
+        public async Task<IActionResult> CreateProject(CreateProjectRequest createProjectRequest)
         {
             var project = new Project
             {
@@ -39,17 +45,16 @@ namespace FastPMS.Controllers
 
             };
 
-            PMSDbContext.Projects.Add(project);
+            await projectRepository.AddProjectAsync(project);
             // Store success message in TempData
             TempData["SuccessMessage"] = "Project Create successfully!";
-            PMSDbContext.SaveChanges();
             return RedirectToAction("AllProject", "AdminProject");
         }
 
         [HttpGet]
-        public IActionResult AllProject()
+        public async Task<IActionResult> AllProject()
         {
-            var projects = PMSDbContext.Projects.ToList();
+            var projects=await projectRepository.GetAllProjectsAsync();
 
             var notStartedCount = projects.Count(p => p.Status.Trim().ToLower() == "not started");
             var inProgressCount = projects.Count(p => p.Status.Trim().ToLower() == "in progress");
@@ -75,54 +80,16 @@ namespace FastPMS.Controllers
 
         // Action to export all projects to Excel
         [HttpGet]
-        public IActionResult ExportToExcel()
+        public async Task<IActionResult> ExportToExcel()
         {
-            var projects = PMSDbContext.Projects.ToList(); // Fetch all projects from the database
-
-            // Create a new Excel package
-            using (var package = new ExcelPackage())
-            {
-                // Add a new worksheet to the workbook
-                var worksheet = package.Workbook.Worksheets.Add("Projects");
-
-                // Set the column headers
-                worksheet.Cells[1, 1].Value = "Project ID";
-                worksheet.Cells[1, 2].Value = "Project Title";
-                worksheet.Cells[1, 3].Value = "Project Description";
-                worksheet.Cells[1, 4].Value = "Stack";
-                worksheet.Cells[1, 5].Value = "Start Date";
-                worksheet.Cells[1, 6].Value = "End Date";
-                worksheet.Cells[1, 7].Value = "Status";
-
-                // Populate rows with project data
-                for (int i = 0; i < projects.Count; i++)
-                {
-                    var project = projects[i];
-                    worksheet.Cells[i + 2, 1].Value = project.ProjectId;
-                    worksheet.Cells[i + 2, 2].Value = project.ProjectTitle;
-                    worksheet.Cells[i + 2, 3].Value = project.ProjectDescription;
-                    worksheet.Cells[i + 2, 4].Value = project.Stack;
-                    worksheet.Cells[i + 2, 5].Value = project.StartDate.ToString("yyyy-MM-dd");
-                    worksheet.Cells[i + 2, 6].Value = project.EndDate.ToString("yyyy-MM-dd");
-                    worksheet.Cells[i + 2, 7].Value = project.Status;
-                }
-
-                // Auto-fit columns for readability
-                worksheet.Cells.AutoFitColumns();
-
-                // Convert the Excel package to a byte array
-                var excelData = package.GetAsByteArray();
-
-                // Return the file for download
-                return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Projects.xlsx");
-            }
-
+            var excelData = await projectRepository.ExportProjectsToExcelAsync();
+            return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Projects.xlsx");
 
         }
         [HttpGet]
-        public IActionResult EditProject(int id)
+        public async Task<IActionResult> EditProject(int id)
         {
-            var project = PMSDbContext.Projects.FirstOrDefault(x => x.ProjectId == id);
+            var project =await projectRepository.GetProjectById(id);
             if (project != null)
             {
                 var editProjectRequest = new EditProjectRequest
@@ -141,7 +108,7 @@ namespace FastPMS.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditProject(EditProjectRequest editProjectRequest)
+        public async Task<IActionResult> EditProject(EditProjectRequest editProjectRequest)
         {
             var project = new Project
             {
@@ -154,35 +121,26 @@ namespace FastPMS.Controllers
                 Status = editProjectRequest.Status,
             };
 
-            // Fetch the existing project from the database using ProjectId
-            var existingProject = PMSDbContext.Projects.Find(editProjectRequest.ProjectId);
-            if (existingProject != null)
+
+            var updatedProject = await projectRepository.UpdateProjectAsync(editProjectRequest.ProjectId, editProjectRequest);
+
+            if (updatedProject != null)
             {
-                // Update the existing project's properties
-                existingProject.ProjectTitle = editProjectRequest.ProjectTitle;
-                existingProject.ProjectDescription = editProjectRequest.ProjectDescription;
-                existingProject.Stack = editProjectRequest.Stack;
-                existingProject.StartDate = editProjectRequest.StartDate;
-                existingProject.EndDate = editProjectRequest.EndDate;
-                existingProject.Status = editProjectRequest.Status;
-
-                // Save changes to the database
-                PMSDbContext.SaveChanges();
-
-                // Store success message in TempData
                 TempData["updateSuccess"] = "Project updated successfully!";
             }
-            return RedirectToAction("AllProject");
-        }
-        [HttpPost]
-        public IActionResult DeleteProject(int id)
-        {
-            var project = PMSDbContext.Projects.Find(id);
-            if (project != null)
+            else
             {
-                PMSDbContext.Projects.Remove(project);
-                PMSDbContext.SaveChanges(); // Don't forget to save changes after removal
+                TempData["updateFail"] = "Project not found!";
             }
+
+            return RedirectToAction("AllProject");
+        } 
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            var project = await projectRepository.DeleteProjectAsync(id);
 
             // Redirect back to All Projects page or wherever you want
             return RedirectToAction("AllProject");
@@ -209,14 +167,29 @@ namespace FastPMS.Controllers
                     }
                 }
 
-               await PMSDbContext.AddAsync(developer);
-                await PMSDbContext.SaveChangesAsync();
-                return RedirectToAction("AllProject", "AdminProject");
+                await developerRepository.AddDeveloperAsync(developer);
+                return RedirectToAction("AllDeveloper", "AdminProject");
             }
+
             return View(developer);
 
 
 
+        }
+
+        //All Developer rettrive from database 
+        [HttpGet] 
+        public async Task<IActionResult> AllDeveloper()
+        {
+            var developers = await developerRepository.GetAllDevelopersAsync();
+            return View(developers);
+        }
+
+        [HttpPost] 
+        public async Task<IActionResult> DevDelete(int id)
+        { 
+            var dev=await developerRepository.DevDeleteAsync(id);
+            return RedirectToAction("AllDeveloper");
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using FastPMS.Models.Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FastPMS.Data
 {
-    public class PmsDbContext:DbContext
+    public class PmsDbContext:IdentityDbContext<Users>
     {
         public PmsDbContext(DbContextOptions options):base(options)
         {
@@ -13,3 +14,5 @@ namespace FastPMS.Data
         public DbSet<Developer> Developers { get; set; }
     }
 }
+
+

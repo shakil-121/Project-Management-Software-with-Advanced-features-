@@ -1,0 +1,114 @@
+﻿@model List<FastPMS.Models.Domain.Developer>
+
+<html>
+<link rel="stylesheet" href="~/css/buttonStyle.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/error.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
+<head>
+    <style>
+        .table-hover tr:hover {
+            background-color: #b5e2f6;
+        }
+
+        .listPage {
+            margin-top: 80px;
+        }
+
+        .developer-img {
+            width: 50px; /* Adjust the size as per your requirement */
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="container listPage">
+
+        <div class="d-flex justify-content-between align-items-center my-3 mx-1">
+            <h2>All Developers</h2>
+
+            <a asp-controller="AdminProject" asp-action="AddDev" class="text-decoration-none">
+                <button class="cssbuttons-io-button">
+                    Add New Developer
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg>
+                    </div>
+                </button>
+            </a>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="rounded  p-2">
+                <table class="table table-bordered table-dark rounded-circle table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Dev.ID</th>
+                            <th scope="col">Developer Image</th>
+                            <th scope="col">Developer Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var developer in Model)
+                        {
+                            <tr>
+                                <td>@developer.DeveloperID</td>
+                                <td>
+                                    @if (developer.image != null && developer.image.Length > 0)
+                                    {
+                                        <img class="developer-img" src="data:image/jpeg;base64,@Convert.ToBase64String(developer.image)" alt="Developer Image" />
+                                    }
+                                    else
+                                    {
+                                        <span>No Image</span>
+                                    }
+                                </td>
+                                <td>@developer.Name</td>
+                                <td>@developer.Email</td>
+                                <td>@developer.Role</td>
+
+                                <td>
+                                    <div class="d-flex">
+                                        <!-- Edit button -->
+                                        <button title="Edit" class="btn btn-light text-black">
+                                            <a class="text-decoration-none text-dark" asp-controller="AdminProject" asp-action="EditDeveloper" asp-route-id="@developer.DeveloperID">
+                                                <span><i class='bx bx-edit-alt'></i></span>
+                                            </a>
+                                        </button>
+
+                                        <!-- Delete button -->
+                                        <form method="post" asp-controller="AdminProject" asp-action="DevDelete" asp-route-id="@developer.DeveloperID" class="ms-1">
+                                            <button type="submit" class="btn btn-danger text-light" title="Delete">
+                                                <i class="bx bxs-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="terminal-loader">
+                <div class="terminal-header">
+                    <div class="terminal-title">Status</div>
+                    <div class="terminal-controls">
+                        <div class="control close"></div>
+                        <div class="control minimize"></div>
+                        <div class="control maximize"></div>
+                    </div>
+                </div>
+                <div class="text">No Developers Found...</div>
+            </div>
+        }
+    </div>
+</body>
+
+</html>

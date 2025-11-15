@@ -10,14 +10,14 @@
         "projectUniqueName": "D:\\ASP.NET Course\\PMS\\FastPMS\\FastPMS.csproj",
         "projectName": "FastPMS",
         "projectPath": "D:\\ASP.NET Course\\PMS\\FastPMS\\FastPMS.csproj",
-        "packagesPath": "C:\\Users\\Ai\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\shaha\\.nuget\\packages\\",
         "outputPath": "D:\\ASP.NET Course\\PMS\\FastPMS\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Ai\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\shaha\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,15 +44,23 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.27.5, )"
+            },
             "EPPlus": {
               "target": "Package",
               "version": "[7.5.2, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.22, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -88,7 +96,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

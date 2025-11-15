@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "ContainingType": "FastPMS.Controllers.ImageController",
+    "Method": "Index",
+    "RelativePath": "api/Image",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FastPMS.Controllers.ImageController",
+    "Method": "UploadAsync",
+    "RelativePath": "api/Image",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]
