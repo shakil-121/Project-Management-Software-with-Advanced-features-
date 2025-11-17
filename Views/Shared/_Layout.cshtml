@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FastPMS.styles.css" asp-append-version="true" /> 
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-          rel="stylesheet" />
+    <link rel="stylesheet" href="~/FastPMS.styles.css" asp-append-version="true" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+   
 </head>
 <body>
     <section class="sidebar">
@@ -23,125 +23,211 @@
                 <input type="text" placeholder="search..." />
                 <span class="tooltip">Search</span>
             </li>
+
             <li>
                 <a asp-controller="Home" asp-action="Index">
                     <i class="bx bx-home-alt-2"></i>
-                    <span class="title">Home</span>
+                    <span class="title">Dashboard</span>
                 </a>
-                <span class="tooltip">Home</span>
+                <span class="tooltip">Dashboard</span>
             </li>
-            <li>
-                <a asp-controller="AdminProject" asp-action="CreateProject">
-                    <i class='bx bx-folder-plus'></i>
-                    <span class="title">Create Project</span>
-                </a>
-                <span class="tooltip">Create Project</span>
-            </li> 
-            <li>
-                <a asp-for="Index">
-                    <i class='bx bx-task'></i>
-                    <span class="title">Add Task</span>
-                </a>
-                <span class="tooltip">Add Task</span>
-            </li> 
-            <li>
-                <a asp-for="Index">
-                    <i class='bx bx-add-to-queue'></i>
-                    <span class="title">Add Sub-Task</span>
-                </a>
-                <span class="tooltip">Add Sub-Task</span>
-            </li> 
-            <li>
-                <a asp-action="AllProject" asp-controller="AdminProject">
-                    <i class='bx bx-folder-open'></i>
-                    <span class="title">All Projects</span>
-                </a>
-                <span class="tooltip">All Projects</span>
-            </li>
-            <li>
-                <a asp-controller="AdminProject" asp-action="AddDev">
-                    <i class='bx bx-user-plus'></i>
-                    <span class="title">Add Developer</span>
-                </a>
-                <span class="tooltip">Create Developer</span>
-            </li>
-            <li>
-                <a asp-controller="AdminProject" asp-action="AllDeveloper">
-                    <i class='bx bxl-microsoft-teams'></i>
-                    <span class="title">Create Team</span>
-                </a>
-                <span class="tooltip">Create Team</span>
-            </li>
-        </ul>
-        <div class="theme-wrapper">
-            <i class="bx bxs-moon theme-icon"></i>
-            <p>Dark Theme</p>
-            <div class="theme-btn">
-                <span class="theme-ball"></span>
-            </div>
-        </div> 
 
+            <!-- SUPER ADMIN & ADMIN MENU -->
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+            {
+                <li>
+                    <a asp-controller="AdminProject" asp-action="CreateProject">
+                        <i class='bx bx-folder-plus'></i>
+                        <span class="title">Create Project</span>
+                    </a>
+                    <span class="tooltip">Create Project</span>
+                </li>
+                <li>
+                    <a asp-controller="AdminProject" asp-action="AllProject">
+                        <i class='bx bx-folder-open'></i>
+                        <span class="title">All Projects</span>
+                    </a>
+                    <span class="tooltip">All Projects</span>
+                </li>
+                <li>
+                    <a asp-controller="Task" asp-action="Create">
+                        <i class='bx bx-task'></i>
+                        <span class="title">Add Task</span>
+                    </a>
+                    <span class="tooltip">Add Task</span>
+                </li>
+                <li>
+                    <a asp-controller="Task" asp-action="CreateSubTask">
+                        <i class='bx bx-add-to-queue'></i>
+                        <span class="title">Add Sub-Task</span>
+                    </a>
+                    <span class="tooltip">Add Sub-Task</span>
+                </li>
+
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <li>
+                        <a asp-controller="AdminProject" asp-action="AddDev">
+                            <i class='bx bx-user-plus'></i>
+                            <span class="title">Add Developer</span>
+                        </a>
+                        <span class="tooltip">Add Developer</span>
+                    </li>
+                }
+
+                <li>
+                    <a asp-controller="AdminProject" asp-action="AllDeveloper">
+                        <i class='bx bxl-microsoft-teams'></i>
+                        <span class="title">Create Team</span>
+                    </a>
+                    <span class="tooltip">Create Team</span>
+                </li>
+                <li>
+                    <a asp-controller="Project" asp-action="Assign">
+                        <i class='bx bx-user-check'></i>
+                        <span class="title">Assign Project</span>
+                    </a>
+                    <span class="tooltip">Assign Project</span>
+                </li>
+                <li>
+                    <a asp-controller="Chat" asp-action="Index">
+                        <i class='bx bx-chat'></i>
+                        <span class="title">Chatting</span>
+                    </a>
+                    <span class="tooltip">Chatting</span>
+                </li>
+            }
+
+            <!-- TEAM MEMBER MENU -->
+            @if (User.IsInRole("TeamMember"))
+            {
+                <li>
+                    <a asp-controller="Project" asp-action="MyProjects">
+                        <i class='bx bx-folder'></i>
+                        <span class="title">Assigned Projects</span>
+                    </a>
+                    <span class="tooltip">Assigned Projects</span>
+                </li>
+                <li>
+                    <a asp-controller="Task" asp-action="MyTasks">
+                        <i class='bx bx-task'></i>
+                        <span class="title">My Tasks</span>
+                    </a>
+                    <span class="tooltip">My Tasks</span>
+                </li>
+                <li>
+                    <a asp-controller="Task" asp-action="MySubTasks">
+                        <i class='bx bx-list-check'></i>
+                        <span class="title">My Sub-Tasks</span>
+                    </a>
+                    <span class="tooltip">My Sub-Tasks</span>
+                </li>
+                <li>
+                    <a asp-controller="Chat" asp-action="Index">
+                        <i class='bx bx-chat'></i>
+                        <span class="title">Chatting</span>
+                    </a>
+                    <span class="tooltip">Chatting</span>
+                </li>
+            }
+
+            <!-- CLIENT MENU -->
+            @if (User.IsInRole("Client"))
+            {
+                <li>
+                    <a asp-controller="Project" asp-action="MyProjectStatus">
+                        <i class='bx bx-line-chart'></i>
+                        <span class="title">Project Status</span>
+                    </a>
+                    <span class="tooltip">Project Status</span>
+                </li>
+                <li>
+                    <a asp-controller="Chat" asp-action="Index">
+                        <i class='bx bx-chat'></i>
+                        <span class="title">Chatting</span>
+                    </a>
+                    <span class="tooltip">Chatting</span>
+                </li>
+            }
+
+            <!-- BOTTOM SECTION - User Info & Logout -->
+            @if (User.Identity.IsAuthenticated)
+            {
+                <!-- User Info -->
+                <li class="user-info">
+                    <div class="user-details">
+                        <i class='bx bx-user'></i>
+                        <span class="title">
+                            <small>@User.Identity.Name</small>
+                            <br>
+                            <small class="text-muted">
+                                @{
+                                    var claims = Context.User.Claims;
+                                    var roleClaim = claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role);
+                                    var role = roleClaim?.Value ?? "User";
+                                }
+                                @role
+                            </small>
+                        </span>
+                    </div>
+                </li>
+
+                <!-- Logout Button -->
+                <li class="logout-section">
+                    <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
+                        <a href="#" onclick="document.getElementById('logoutForm').submit(); return false;">
+                            <i class='bx bx-log-out'></i>
+                            <span class="title">Logout</span>
+                        </a>
+                    </form>
+                    <span class="tooltip">Logout</span>
+                </li>
+            }
+        </ul>
     </section>
+
     <section class="home">
         <div class="container">
             <main role="main" class="pb-3">
                 @RenderBody()
-                <div class="text-center fixed-bottom ">
+                <div class="text-center fixed-bottom">
                     <h6>&copy; 2024 - Shahadat Hossain</h6>
                 </div>
             </main>
         </div>
     </section>
 
-   
-
-    
-
     <script>
         const btn_menu = document.querySelector(".btn-menu");
         const side_bar = document.querySelector(".sidebar");
 
         btn_menu.addEventListener("click", function () {
-          side_bar.classList.toggle("expand");
-          changebtn();
+            side_bar.classList.toggle("expand");
+            changebtn();
         });
 
         function changebtn() {
-          if (side_bar.classList.contains("expand")) {
-            btn_menu.classList.replace("bx-menu", "bx-menu-alt-right");
-          } else {
-            btn_menu.classList.replace("bx-menu-alt-right", "bx-menu");
-          }
+            if (side_bar.classList.contains("expand")) {
+                btn_menu.classList.replace("bx-menu", "bx-menu-alt-right");
+            } else {
+                btn_menu.classList.replace("bx-menu-alt-right", "bx-menu");
+            }
         }
 
-        const btn_theme = document.querySelector(".theme-btn");
-        const theme_ball = document.querySelector(".theme-ball");
-
-        const localData = localStorage.getItem("theme");
-
-        if (localData == null) {
-          localStorage.setItem("theme", "light");
-        }
-
-        if (localData == "dark") {
-          document.body.classList.add("dark-mode");
-          theme_ball.classList.add("dark");
-        } else if (localData == "light") {
-          document.body.classList.remove("dark-mode");
-          theme_ball.classList.remove("dark");
-        }
-
-        btn_theme.addEventListener("click", function () {
-          document.body.classList.toggle("dark-mode");
-          theme_ball.classList.toggle("dark");
-          if (document.body.classList.contains("dark-mode")) {
-            localStorage.setItem("theme", "dark");
-          } else {
-            localStorage.setItem("theme", "light");
-          }
+        // Logout confirmation
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutForm = document.getElementById('logoutForm');
+            if (logoutForm) {
+                const logoutLink = logoutForm.querySelector('a');
+                logoutLink.addEventListener('click', function(e) {
+                    if (!confirm('Are you sure you want to logout?')) {
+                        e.preventDefault();
+                    }
+                });
+            }
         });
     </script>
-   
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
