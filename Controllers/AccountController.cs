@@ -250,7 +250,13 @@ namespace FastPMS.Controllers
             }
         }
 
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
 
 
     }
