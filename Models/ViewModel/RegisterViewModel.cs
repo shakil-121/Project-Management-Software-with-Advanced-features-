@@ -24,7 +24,7 @@ namespace FastPMS.Models.ViewModel
         public string ConfirmPassword { get; set; }
 
         // Default values - these won't be shown in the registration form
-        public string Role { get; set; } = "Client";
-        public string Department { get; set; } = "None";
+        public string Role { get; set; }
+        public string Department { get; set; }
     }
 }
