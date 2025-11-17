@@ -1,0 +1,189 @@
+﻿@using FastPMS.Models.Domain
+@using FastPMS.Models.ViewModel;
+@model RegisterViewModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Users> UserManager
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+
+    var currentUser = await UserManager.GetUserAsync(User);
+    var isSuperAdmin = currentUser != null && currentUser.Role == "SuperAdmin";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FastPMS</title>
+    <link rel="stylesheet" href="~/css/account.css">
+</head>
+<body>
+    <div class="account-container">
+        <div class="account-box"> 
+
+            <!-- 🔥 DEBUG MESSAGES DISPLAY -->
+            @if (ViewBag.DebugMessages != null)
+            {
+                <div class="alert alert-info debug-container" style="max-height: 300px; overflow-y: auto;">
+                    <h6>🔧 Debug Information:</h6>
+                    <ul class="mb-0">
+                        @foreach (var message in ViewBag.DebugMessages)
+                        {
+                            <li>@message</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (TempData["DebugMessages"] != null)
+            {
+                <div class="alert alert-warning">
+                    <h6>🔧 Post-Redirect Debug:</h6>
+                    <pre>@TempData["DebugMessages"]</pre>
+                </div>
+            }
+
+
+            @if (isSuperAdmin)
+            {
+                <h2 class="text-center mb-4">Create User Account</h2>
+                <p class="text-center text-muted mb-4">Create Admin or Team Member accounts</p>
+            }
+            else
+            {
+                <h2 class="text-center mb-4">Create Account</h2>
+                <p class="text-center text-muted mb-4">Join as a Client</p>
+            }
+
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Full Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm your password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <!-- Super Admin Only Sections -->
+                @if (isSuperAdmin)
+                {
+                    <!-- Role Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">User Role</label>
+                        <select asp-for="Role" class="form-control" id="roleSelect" onchange="toggleDepartment()">
+                            <option value="Admin">Admin</option>
+                            <option value="TeamMember">Team Member</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+
+                    <!-- Department Selection (Show only for Team Member) -->
+                    <div class="mb-3" id="departmentSection">
+                        <label class="form-label">Department</label>
+                        <select asp-for="Department" class="form-control">
+                            <option value="">Select Department</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Mobile Development">Mobile Development</option>
+                            <option value="UI/UX Design">UI/UX Design</option>
+                            <option value="Quality Assurance">Quality Assurance</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="Project Management">Project Management</option>
+                        </select>
+                        <span asp-validation-for="Department" class="text-danger"></span>
+                    </div>
+                }
+                else
+                {
+                    <!-- Hidden fields for Client registration -->
+                    <input type="hidden" asp-for="Role" value="Client" />
+                    <input type="hidden" asp-for="Department" value="None" />
+                }
+
+                <input type="submit" value="@(isSuperAdmin ? "Create User" : "Register")" class="shadow__btn btn text-white w-100 p-2" />
+
+                <!-- Different links based on user role -->
+                @if (isSuperAdmin)
+                {
+                    <p class="text-center mt-2">
+                        <a asp-controller="UserManagement" asp-action="UserList" class="text-decoration-none">Back to User Management</a>
+                    </p>
+                }
+                else
+                {
+                    <p class="text-center mt-2">
+                        Already have an account? <a asp-controller="Account" asp-action="Login" class="text-decoration-none">Login</a>
+                    </p>
+                    <div class="text-center">
+                        <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back to Home</a>
+                    </div>
+                }
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function toggleDepartment() {
+            const roleSelect = document.getElementById('roleSelect');
+            const departmentSection = document.getElementById('departmentSection');
+            const departmentField = document.querySelector('[name="Department"]');
+            const departmentInput = document.getElementById('Department');
+
+            if (roleSelect && departmentSection && departmentField) {
+                // Show department only for TeamMember, hide for Admin and others
+                if (roleSelect.value === 'TeamMember') {
+                    departmentSection.style.display = 'block';
+                    departmentField.setAttribute('required', 'required');
+                    if (departmentInput) departmentInput.setAttribute('required', 'required');
+                } else {
+                    departmentSection.style.display = 'none';
+                    departmentField.removeAttribute('required');
+                    if (departmentInput) departmentInput.removeAttribute('required');
+                    departmentField.value = ''; // Clear value for Admin
+                }
+
+                console.log('Role:', roleSelect.value, 'Department visible:', departmentSection.style.display);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleDepartment();
+
+            // Add event listener to role select
+            const roleSelect = document.getElementById('roleSelect');
+            if (roleSelect) {
+                roleSelect.addEventListener('change', toggleDepartment);
+            }
+        });
+    </script>
+}
+}

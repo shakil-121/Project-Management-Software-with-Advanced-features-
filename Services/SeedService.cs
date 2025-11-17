@@ -43,7 +43,9 @@ namespace FastPMS.Services
                         Email = superAdminEmail,
                         NormalizedEmail = superAdminEmail.ToUpper(),
                         NormalizedUserName = superAdminEmail.ToUpper(),
-                        EmailConfirmed = true
+                        EmailConfirmed = true,
+                        Role = "SuperAdmin",
+                        Department = "Management" 
                     };
 
                     var result = await userManager.CreateAsync(superAdmin, "SuperAdmin@123");
