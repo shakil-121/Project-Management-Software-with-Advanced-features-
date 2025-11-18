@@ -1,11 +1,13 @@
 ﻿using FastPMS.Models.Domain;
 using FastPMS.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace FastPMS.Controllers
 {
+    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly SignInManager<Users> signInManager;
