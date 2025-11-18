@@ -1,10 +1,12 @@
-using System.Diagnostics;
 using FastPMS.Data;
 using FastPMS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace FastPMS.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         
