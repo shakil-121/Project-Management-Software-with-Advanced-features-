@@ -44,7 +44,6 @@ namespace FastPMS.Hubs
             var sender = await _userManager.GetUserAsync(Context.User);
             if (sender == null) return;
 
-            // Save to database
             await _chatService.SendMessageAsync(sender.Id, receiverId, message);
 
             // Get sender role
@@ -57,7 +56,7 @@ namespace FastPMS.Hubs
                 SenderId = sender.Id,
                 SenderName = sender.UserName,
                 SenderRole = senderRole,
-                Message = message,
+                Message = message, 
                 Timestamp = DateTime.Now
             });
 
@@ -67,7 +66,7 @@ namespace FastPMS.Hubs
                 SenderId = sender.Id,
                 SenderName = sender.UserName,
                 SenderRole = senderRole,
-                Message = message,
+                Message = message, 
                 Timestamp = DateTime.Now
             });
         }

@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using FastPMS.Models.Domain;
 using FastPMS.Services;
 using System.Security.Claims;
-using Microsoft.AspNetCore.SignalR;
-using FastPMS.Hubs;
 
 namespace FastPMS.Controllers
 {
@@ -14,15 +12,11 @@ namespace FastPMS.Controllers
     {
         private readonly IChatService _chatService;
         private readonly UserManager<Users> _userManager;
-        private readonly IHubContext<ChatHub> _hubContext;
 
-        public ChatController(IChatService chatService,
-                            UserManager<Users> userManager,
-                            IHubContext<ChatHub> hubContext)
+        public ChatController(IChatService chatService, UserManager<Users> userManager)
         {
             _chatService = chatService;
             _userManager = userManager;
-            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> Index()

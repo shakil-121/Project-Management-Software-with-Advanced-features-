@@ -36,10 +36,10 @@ builder.Services.AddScoped<IChatService, ChatService>();
 
 // ==================== AI ASSISTANT SERVICES ====================
 // Add HttpClient for DeepSeek API
-builder.Services.AddHttpClient();
+//builder.Services.AddHttpClient();
 
 // Add AI Services
-builder.Services.AddScoped<IDeepSeekService, DeepSeekService>();
+//builder.Services.AddScoped<IDeepSeekService, DeepSeekService>();
 // ==================== END AI ASSISTANT SERVICES ====================
 
 var app = builder.Build();
