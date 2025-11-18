@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FastPMS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25be7b68c01b34b55ea5d4c14b6097536a4f646c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fbaa0e22f5676719f9dc14a3a9623b5124772c62")]
 [assembly: System.Reflection.AssemblyProductAttribute("FastPMS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FastPMS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
