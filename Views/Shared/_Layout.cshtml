@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FastPMS.styles.css" asp-append-version="true" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-   
+
+    <!-- Font Awesome for AI Assistant Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <body>
     <section class="sidebar">
@@ -196,6 +199,9 @@
             </main>
         </div>
     </section>
+
+    <!-- AI Assistant Partial View -->
+    @await Html.PartialAsync("_AIChatButton")
 
     <script>
         const btn_menu = document.querySelector(".btn-menu");
