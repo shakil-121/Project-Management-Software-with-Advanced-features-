@@ -1,3 +1,4 @@
+wwwroot\css\account.css
 wwwroot\css\buttonStyle.css
 wwwroot\css\error.css
 wwwroot\css\site.css
@@ -63,4 +64,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\account.css

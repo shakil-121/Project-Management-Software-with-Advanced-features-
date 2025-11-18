@@ -1,4 +1,4 @@
-using FastPMS.Data;
+﻿using FastPMS.Data;
 using FastPMS.Hubs;
 using FastPMS.ImageRepository;
 using FastPMS.Models.Domain;
@@ -13,9 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// ✅ SIGNALR FOR LIVE CHAT
 builder.Services.AddSignalR();
+
+// ✅ DATABASE
 builder.Services.AddDbContext<PmsDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("PmsDbConnectionString")));
 
+// ✅ IDENTITY
 builder.Services.AddIdentity<Users, IdentityRole>(Options =>
 {
     Options.Password.RequireDigit = true;
@@ -27,20 +32,18 @@ builder.Services.AddIdentity<Users, IdentityRole>(Options =>
     Options.SignIn.RequireConfirmedAccount = false;
 }).AddEntityFrameworkStores<PmsDbContext>().AddDefaultTokenProviders();
 
-// dependency for Repository 
+// ✅ REPOSITORIES
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IDeveloperRepository, DeveloperRepository>();
 builder.Services.AddScoped<IImageRepo, CloudinaryImageRepo>();
+
+// ✅ CHAT SERVICES (LIVE CHATTING)
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
 
-// ==================== AI ASSISTANT SERVICES ====================
-// Add HttpClient for DeepSeek API
-//builder.Services.AddHttpClient();
-
-// Add AI Services
-//builder.Services.AddScoped<IDeepSeekService, DeepSeekService>();
-// ==================== END AI ASSISTANT SERVICES ====================
+// ✅ AI ASSISTANT SERVICES (WITH FALLBACK)
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IDeepSeekService, DeepSeekService>();
 
 var app = builder.Build();
 
@@ -50,7 +53,6 @@ await SeedService.SeedDatabase(app.Services);
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -59,9 +61,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();
-
 app.UseAuthorization();
 
+// ✅ SIGNALR HUB MAPPING
 app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllerRoute(
