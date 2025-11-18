@@ -12,7 +12,8 @@
 
     <!-- Font Awesome for AI Assistant Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <!-- Render additional styles from views -->
+    @RenderSection("Styles", required: false)
 </head>
 <body>
     <section class="sidebar">
@@ -94,10 +95,10 @@
                 </li>
                 <li>
                     <a asp-controller="Chat" asp-action="Index">
-                        <i class='bx bx-chat'></i>
-                        <span class="title">Chatting</span>
+                        <i class='bx bx-message-rounded-dots'></i>
+                        <span class="title">Live Chat</span>
                     </a>
-                    <span class="tooltip">Chatting</span>
+                    <span class="tooltip">Live Chat</span>
                 </li>
             }
 
@@ -127,10 +128,10 @@
                 </li>
                 <li>
                     <a asp-controller="Chat" asp-action="Index">
-                        <i class='bx bx-chat'></i>
-                        <span class="title">Chatting</span>
+                        <i class='bx bx-message-rounded-dots'></i>
+                        <span class="title">Live Chat</span>
                     </a>
-                    <span class="tooltip">Chatting</span>
+                    <span class="tooltip">Live Chat</span>
                 </li>
             }
 
@@ -146,10 +147,10 @@
                 </li>
                 <li>
                     <a asp-controller="Chat" asp-action="Index">
-                        <i class='bx bx-chat'></i>
-                        <span class="title">Chatting</span>
+                        <i class='bx bx-message-rounded-dots'></i>
+                        <span class="title">Live Chat</span>
                     </a>
-                    <span class="tooltip">Chatting</span>
+                    <span class="tooltip">Live Chat</span>
                 </li>
             }
 
@@ -237,6 +238,11 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <!-- SignalR Client Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+    <!-- Render additional scripts from views -->
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

@@ -1,4 +1,5 @@
 using FastPMS.Data;
+using FastPMS.Hubs;
 using FastPMS.ImageRepository;
 using FastPMS.Models.Domain;
 using FastPMS.Repositories;
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 builder.Services.AddDbContext<PmsDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("PmsDbConnectionString")));
 
 builder.Services.AddIdentity<Users, IdentityRole>(Options =>
@@ -29,6 +31,8 @@ builder.Services.AddIdentity<Users, IdentityRole>(Options =>
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IDeveloperRepository, DeveloperRepository>();
 builder.Services.AddScoped<IImageRepo, CloudinaryImageRepo>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 // ==================== AI ASSISTANT SERVICES ====================
 // Add HttpClient for DeepSeek API
@@ -57,6 +61,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllerRoute(
     name: "default",

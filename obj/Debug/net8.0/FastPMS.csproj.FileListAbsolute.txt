@@ -183,3 +183,4 @@ D:\ASP.NET Course\PMS\FastPMS\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography
 D:\ASP.NET Course\PMS\FastPMS\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 D:\ASP.NET Course\PMS\FastPMS\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
 D:\ASP.NET Course\PMS\FastPMS\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
+D:\ASP.NET Course\PMS\FastPMS\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
