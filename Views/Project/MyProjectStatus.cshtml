@@ -1,0 +1,590 @@
+﻿@model List<FastPMS.Models.Domain.Project>
+@{
+    ViewData["Title"] = "My Projects";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // আপনার layout path
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">My Projects</h2>
+                    <p class="text-muted mb-0">Overview of all projects assigned to you</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-primary fs-6">@Model.Count Projects</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Projects</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalProjects</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bx bx-folder bx-lg text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.CompletedProjects</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bx bx-check-circle bx-lg text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">In Progress</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.InProgressProjects</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bx bx-time bx-lg text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Not Started</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.NotStartedProjects</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bx bx-alarm bx-lg text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">On Hold</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.OnHoldProjects</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bx bx-pause-circle bx-lg text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Overdue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @{
+                                    var overdueCount = Model.Count(p => p.EndDate < DateTime.Now && p.Status != "Completed");
+                                }
+                                @overdueCount
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bx bx-error bx-lg text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class='bx bx-check-circle me-2'></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class='bx bx-error-circle me-2'></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Projects Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">My Assigned Projects</h6>
+                    <div>
+                        <span class="badge bg-primary fs-6">@Model.Count Projects</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <!-- Projects Grid View -->
+                        <div class="row" id="gridView">
+                            @foreach (var project in Model)
+                            {
+                                var progress = project.Status == "Completed" ? 100 :
+                                project.Status == "In Progress" ? 50 :
+                                project.Status == "Not Started" ? 0 : 25;
+
+                                var statusColor = project.Status == "Completed" ? "success" :
+                                project.Status == "In Progress" ? "warning" :
+                                project.Status == "Not Started" ? "secondary" : "danger";
+
+                                var isOverdue = project.EndDate < DateTime.Now && project.Status != "Completed";
+                                var daysRemaining = (project.EndDate - DateTime.Now).Days;
+
+                                <div class="col-xl-4 col-md-6 mb-4">
+                                    <div class="card project-card h-100 border-@statusColor shadow-sm">
+                                        @if (isOverdue)
+                                        {
+                                            <div class="card-header bg-danger text-white py-2">
+                                                <small><i class='bx bx-error'></i> OVERDUE</small>
+                                            </div>
+                                        }
+                                        <div class="card-body">
+                                            <!-- Project Header -->
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <h5 class="card-title text-truncate" title="@project.ProjectTitle">
+                                                    @project.ProjectTitle
+                                                </h5>
+                                                <span class="badge bg-@statusColor">@project.Status</span>
+                                            </div>
+
+                                            <!-- Project Description -->
+                                            <p class="card-text text-muted small mb-3" style="height: 60px; overflow: hidden;">
+                                                @project.ProjectDescription
+                                            </p>
+
+                                            <!-- Technology Stack -->
+                                            <div class="mb-3">
+                                                <span class="badge bg-info text-dark">
+                                                    <i class='bx bx-code-alt'></i> @project.Stack
+                                                </span>
+                                            </div>
+
+                                            <!-- Progress Bar -->
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <small class="text-muted">Progress</small>
+                                                    <small class="text-muted">@progress%</small>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-@statusColor"
+                                                         role="progressbar"
+                                                         style="width: @progress%"
+                                                         aria-valuenow="@progress"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Project Timeline -->
+                                            <div class="row text-center mb-3">
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">Start Date</small>
+                                                    <strong class="text-primary">@project.StartDate.ToString("MMM dd, yyyy")</strong>
+                                                </div>
+                                                <div class="col-6">
+                                                    <small class="text-muted d-block">End Date</small>
+                                                    <strong class="text-primary">@project.EndDate.ToString("MMM dd, yyyy")</strong>
+                                                </div>
+                                            </div>
+
+                                            <!-- Days Remaining -->
+                                            <div class="text-center mb-3">
+                                                @if (isOverdue)
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class='bx bx-time'></i> Overdue by @Math.Abs(daysRemaining) days
+                                                    </span>
+                                                }
+                                                else if (daysRemaining <= 7 && project.Status != "Completed")
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class='bx bx-time'></i> @daysRemaining days left
+                                                    </span>
+                                                }
+                                                else if (project.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class='bx bx-check'></i> Completed
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-info">
+                                                        <i class='bx bx-time'></i> @daysRemaining days left
+                                                    </span>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Card Footer -->
+                                        <div class="card-footer bg-transparent">
+                                            <div class="d-grid gap-2">
+                                                <a href="@Url.Action("ProjectDetails", "Project", new { id = project.ProjectId })"
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class='bx bx-show me-1'></i> View Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Projects Table View (Hidden by default) -->
+                        <div class="table-responsive d-none" id="tableView">
+                            <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Project Title</th>
+                                        <th>Description</th>
+                                        <th>Technology</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>Days Left</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var project in Model)
+                                    {
+                                        var progress = project.Status == "Completed" ? 100 :
+                                        project.Status == "In Progress" ? 50 :
+                                        project.Status == "Not Started" ? 0 : 25;
+
+                                        var statusColor = project.Status == "Completed" ? "success" :
+                                        project.Status == "In Progress" ? "warning" :
+                                        project.Status == "Not Started" ? "secondary" : "danger";
+
+                                        var daysRemaining = (project.EndDate - DateTime.Now).Days;
+                                        var isOverdue = project.EndDate < DateTime.Now && project.Status != "Completed";
+
+                                        <tr>
+                                            <td>
+                                                <strong>@project.ProjectTitle</strong>
+                                                @if (isOverdue)
+                                                {
+                                                    <br>
+                                        
+                                                    <small class="text-danger"><i class='bx bx-error'></i> Overdue</small>
+                                                }
+                                            </td>
+                                            <td style="max-width: 250px;">
+                                                <div class="text-truncate" title="@project.ProjectDescription">
+                                                    @project.ProjectDescription
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@project.Stack</span>
+                                            </td>
+                                            <td>@project.StartDate.ToString("MMM dd, yyyy")</td>
+                                            <td>@project.EndDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <span class="badge bg-@statusColor">@project.Status</span>
+                                            </td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-@statusColor" role="progressbar"
+                                                         style="width: @progress%"
+                                                         aria-valuenow="@progress"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                        @progress%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (isOverdue)
+                                                {
+                                                    <span class="text-danger">-@Math.Abs(daysRemaining)</span>
+                                                }
+                                                else if (project.Status == "Completed")
+                                                {
+                                                    <span class="text-success">Completed</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@daysRemaining</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("ProjectDetails", "Project", new { id = project.ProjectId })"
+                                                   class="btn btn-info btn-sm" title="View Details">
+                                                    <i class='bx bx-show'></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Empty State -->
+                        <div class="text-center py-5">
+                            <i class='bx bx-folder-open bx-lg text-muted mb-3' style="font-size: 4rem;"></i>
+                            <h4 class="text-muted">No Projects Assigned</h4>
+                            <p class="text-muted mb-4">You don't have any projects assigned to you yet.</p>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="card border-dashed">
+                                        <div class="card-body text-center">
+                                            <i class='bx bx-message-rounded-error bx-lg text-warning mb-3'></i>
+                                            <h5 class="text-warning">What to do next?</h5>
+                                            <p class="text-muted small">
+                                                Contact your project administrator to get assigned to projects or discuss new project opportunities.
+                                            </p>
+                                            <button class="btn btn-outline-primary btn-sm" onclick="contactAdmin()">
+                                                <i class='bx bx-message me-1'></i> Contact Admin
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Card Footer with View Toggle -->
+                @if (Model.Any())
+                {
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">
+                                    Showing <strong>@Model.Count</strong> projects
+                                </small>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="gridViewBtn">
+                                    <i class='bx bx-grid-alt'></i> Grid View
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" id="tableViewBtn">
+                                    <i class='bx bx-table'></i> Table View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+            }
+
+        .project-card {
+            border-left: 4px solid !important;
+        }
+
+        .border-left-primary {
+            border-left: 0.25rem solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: 0.25rem solid #1cc88a !important;
+        }
+
+        .border-left-warning {
+            border-left: 0.25rem solid #f6c23e !important;
+        }
+
+        .border-left-secondary {
+            border-left: 0.25rem solid #858796 !important;
+        }
+
+        .border-left-info {
+            border-left: 0.25rem solid #36b9cc !important;
+        }
+
+        .border-left-danger {
+            border-left: 0.25rem solid #e74a3b !important;
+        }
+
+        .border-dashed {
+            border: 2px dashed #dee2e6 !important;
+        }
+
+        .progress {
+            border-radius: 0.25rem;
+        }
+
+        .btn-group .btn.active {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            color: white;
+        }
+
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Custom scrollbar for table */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // View Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const gridView = document.getElementById('gridView');
+            const tableView = document.getElementById('tableView');
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const tableViewBtn = document.getElementById('tableViewBtn');
+
+            // Grid View by default
+            gridView.classList.remove('d-none');
+            tableView.classList.add('d-none');
+
+            // Grid View Button
+            gridViewBtn.addEventListener('click', function() {
+                gridView.classList.remove('d-none');
+                tableView.classList.add('d-none');
+                gridViewBtn.classList.add('active');
+                tableViewBtn.classList.remove('active');
+            });
+
+            // Table View Button
+            tableViewBtn.addEventListener('click', function() {
+                gridView.classList.add('d-none');
+                tableView.classList.remove('d-none');
+                gridViewBtn.classList.remove('active');
+                tableViewBtn.classList.add('active');
+            });
+
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+
+        // Contact Admin Function
+        function contactAdmin() {
+            // You can integrate with your chat system here
+            const chatUrl = '@Url.Action("Index", "Chat")';
+            if (chatUrl) {
+                window.location.href = chatUrl;
+            } else {
+                alert('Please use the Live Chat feature to contact the administrator.');
+            }
+        }
+
+        // Project Card Click (for better UX)
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectCards = document.querySelectorAll('.project-card');
+            projectCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on buttons or links
+                    if (!e.target.closest('a') && !e.target.closest('button')) {
+                        const detailsLink = this.querySelector('a.btn');
+                        if (detailsLink) {
+                            detailsLink.click();
+                        }
+                    }
+                });
+            });
+        });
+
+        // Search functionality for table view
+        function searchProjects() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.querySelector('#tableView table');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell) {
+                        if (cell.textContent.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+    </script>
+}

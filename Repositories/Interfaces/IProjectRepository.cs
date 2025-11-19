@@ -12,5 +12,9 @@ namespace FastPMS.Repositories.Interfaces
         Task<Project> DeleteProjectAsync(int id);
         Task<byte[]> ExportProjectsToExcelAsync();
 
+        Task AssignClientsToProjectAsync(int projectId, List<string> clientIds, string assignedBy);
+        Task<List<Users>> GetAllClientsAsync();
+        Task<List<Project>> GetProjectsByClientAsync(string clientId);
+        Task<List<Users>> GetAssignedClientsAsync(int projectId);
     }
 }

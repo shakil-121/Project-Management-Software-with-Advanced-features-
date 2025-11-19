@@ -10,5 +10,7 @@
         public DateTime EndDate { get; set; } 
         public string Status {  get; set; }
 
+        public virtual ICollection<ProjectUser> ProjectUsers { get; set; }
+
     }
 }
