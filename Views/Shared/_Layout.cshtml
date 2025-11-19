@@ -140,11 +140,28 @@
             {
                 <li>
                     <a asp-controller="Project" asp-action="MyProjectStatus">
-                        <i class='bx bx-line-chart'></i>
-                        <span class="title">Project Status</span>
+                        <i class='bx bx-folder'></i>
+                        <span class="title">My Projects</span>
+                        @{
+                            // Optional: Show project count badge
+                            var projectCount = ViewBag.TotalProjects ?? 0;
+                            if (projectCount > 0)
+                            {
+                                <span class="badge badge-primary">@projectCount</span>
+                            }
+                        }
                     </a>
-                    <span class="tooltip">Project Status</span>
+                    <span class="tooltip">My Projects</span>
                 </li>
+
+                <li>
+                    <a asp-controller="Project" asp-action="MyProfile">
+                        <i class='bx bx-user'></i>
+                        <span class="title">My Profile</span>
+                    </a>
+                    <span class="tooltip">My Profile</span>
+                </li>
+
                 <li>
                     <a asp-controller="Chat" asp-action="Index">
                         <i class='bx bx-message-rounded-dots'></i>

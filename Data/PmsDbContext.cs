@@ -16,9 +16,26 @@ namespace FastPMS.Data
         public DbSet<Developer> Developers { get; set; }
         public DbSet<LiveChat> LiveChats { get; set; }
 
+        public DbSet<ProjectUser> ProjectUsers { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<ProjectUser>(entity =>
+            {
+                entity.HasKey(pu => pu.Id);
+
+                entity.HasOne(pu => pu.Project)
+                    .WithMany(p => p.ProjectUsers)
+                    .HasForeignKey(pu => pu.ProjectId);
+
+                entity.HasOne(pu => pu.User)
+                    .WithMany(u => u.ProjectUsers)
+                    .HasForeignKey(pu => pu.UserId);
+            });
+
 
             // Configure LiveChats entity to avoid cascade delete issues
             builder.Entity<LiveChat>(entity =>

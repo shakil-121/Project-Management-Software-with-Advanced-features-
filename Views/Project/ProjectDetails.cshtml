@@ -1,0 +1,508 @@
+﻿@model FastPMS.Models.Domain.Project
+@{
+    ViewData["Title"] = "Project Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("MyProjectStatus", "Project")">My Projects</a></li>
+                    <li class="breadcrumb-item active">Project Details</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">Project Details</h2>
+                    <p class="text-muted mb-0">Complete information about your project</p>
+                </div>
+                <div>
+                    @{
+                        var statusColor = Model.Status == "Completed" ? "success" :
+                        Model.Status == "In Progress" ? "warning" :
+                        Model.Status == "Not Started" ? "secondary" : "danger";
+                        var progress = Model.Status == "Completed" ? 100 :
+                        Model.Status == "In Progress" ? 50 :
+                        Model.Status == "Not Started" ? 0 : 25;
+                        var isOverdue = Model.EndDate < DateTime.Now && Model.Status != "Completed";
+                        var daysRemaining = (Model.EndDate - DateTime.Now).Days;
+                    }
+                    <span class="badge bg-@statusColor fs-6">@Model.Status</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class='bx bx-check-circle me-2'></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class='bx bx-error-circle me-2'></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Left Column - Project Information -->
+        <div class="col-lg-8">
+            <!-- Basic Information Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class='bx bx-info-circle me-2'></i> Project Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%" class="text-muted">Project Title:</th>
+                                    <td><strong>@Model.ProjectTitle</strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Technology Stack:</th>
+                                    <td>
+                                        <span class="badge bg-info">@Model.Stack</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Start Date:</th>
+                                    <td>
+                                        <i class='bx bx-calendar me-1 text-primary'></i>
+                                        @Model.StartDate.ToString("dd MMMM, yyyy")
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="40%" class="text-muted">Project ID:</th>
+                                    <td>#@Model.ProjectId</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Current Status:</th>
+                                    <td>
+                                        <span class="badge bg-@statusColor">@Model.Status</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">End Date:</th>
+                                    <td>
+                                        <i class='bx bx-calendar me-1 text-primary'></i>
+                                        @Model.EndDate.ToString("dd MMMM, yyyy")
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Project Description -->
+                    <div class="mt-4">
+                        <h6 class="text-muted mb-3"><i class='bx bx-detail me-2'></i> Project Description</h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="mb-0">@Model.ProjectDescription</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline & Progress Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class='bx bx-trending-up me-2'></i> Project Progress & Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Progress Bar -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">Overall Progress</h6>
+                            <span class="fw-bold text-@statusColor">@progress% Complete</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-@statusColor progress-bar-striped progress-bar-animated"
+                                 role="progressbar"
+                                 style="width: @progress%"
+                                 aria-valuenow="@progress"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                <strong>@progress%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Information -->
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card border-primary">
+                                <div class="card-body py-3">
+                                    <small class="text-muted d-block">Start Date</small>
+                                    <strong class="text-primary">@Model.StartDate.ToString("MMM dd, yyyy")</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-info">
+                                <div class="card-body py-3">
+                                    <small class="text-muted d-block">End Date</small>
+                                    <strong class="text-info">@Model.EndDate.ToString("MMM dd, yyyy")</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-warning">
+                                <div class="card-body py-3">
+                                    <small class="text-muted d-block">Duration</small>
+                                    <strong class="text-warning">@((Model.EndDate - Model.StartDate).Days) days</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card @(isOverdue ? "border-danger" : "border-success")">
+                                <div class="card-body py-3">
+                                    <small class="text-muted d-block">Days @(isOverdue ? "Overdue" : "Remaining")</small>
+                                    <strong class="@(isOverdue ? "text-danger" : "text-success")">
+                                        @Math.Abs(daysRemaining) days
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Visualization -->
+                    <div class="mt-4">
+                        <h6 class="text-muted mb-3"><i class='bx bx-time me-2'></i> Project Timeline</h6>
+                        <div class="timeline">
+                            <div class="timeline-item @(progress >= 0 ? "completed" : "")">
+                                <div class="timeline-point @(progress >= 0 ? "bg-success" : "bg-secondary")"></div>
+                                <div class="timeline-content">
+                                    <small class="text-muted">Project Started</small>
+                                    <p class="mb-0">@Model.StartDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(progress >= 50 ? "completed" : "")">
+                                <div class="timeline-point @(progress >= 50 ? "bg-warning" : "bg-secondary")"></div>
+                                <div class="timeline-content">
+                                    <small class="text-muted">In Progress</small>
+                                    <p class="mb-0">Development Phase</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item @(progress >= 100 ? "completed" : "")">
+                                <div class="timeline-point @(progress >= 100 ? "bg-success" : "bg-secondary")"></div>
+                                <div class="timeline-content">
+                                    <small class="text-muted">Project Completion</small>
+                                    <p class="mb-0">@Model.EndDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Quick Actions & Status -->
+        <div class="col-lg-4">
+            <!-- Status Overview Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-@statusColor text-white">
+                    <h5 class="mb-0"><i class='bx bx-stats me-2'></i> Status Overview</h5>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Status Badge -->
+                    <div class="mb-4">
+                        <span class="badge bg-@statusColor fs-6 p-3">
+                            <i class='bx @(Model.Status == "Completed" ? "bx-check-circle" :
+                                                                        Model.Status == "In Progress" ? "bx-time" :
+                                                                        Model.Status == "Not Started" ? "bx-alarm" : "bx-pause-circle") me-2'></i>
+                            @Model.Status
+                        </span>
+                    </div>
+
+                    <!-- Progress Circle -->
+                    <div class="mb-4">
+                        <div class="progress-circle" data-percentage="@progress">
+                            <span class="progress-circle-value">@progress%</span>
+                        </div>
+                    </div>
+
+                    <!-- Status Messages -->
+                    <div class="alert alert-@statusColor">
+                        <h6 class="alert-heading">
+                            @(Model.Status == "Completed" ? "🎉 Project Completed!" :
+                                                        Model.Status == "In Progress" ? "🚀 Work in Progress" :
+                                                        Model.Status == "Not Started" ? "⏳ Ready to Start" : "⏸️ Project On Hold")
+                        </h6>
+                        <p class="mb-0 small">
+                            @(Model.Status == "Completed" ? "This project has been successfully completed." :
+                                                        Model.Status == "In Progress" ? "The development team is actively working on this project." :
+                                                        Model.Status == "Not Started" ? "The project is scheduled but hasn't started yet." :
+                                                        "This project is currently on hold. Contact admin for details.")
+                        </p>
+                    </div>
+
+                    @if (isOverdue)
+                    {
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading">⚠️ Project Overdue</h6>
+                            <p class="mb-0 small">This project is overdue by @Math.Abs(daysRemaining) days. Please contact the admin team.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class='bx bx-rocket me-2'></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("MyProjectStatus", "Project")" class="btn btn-outline-primary">
+                            <i class='bx bx-arrow-back me-2'></i> Back to Projects
+                        </a>
+                        <button class="btn btn-outline-success" onclick="contactTeam()">
+                            <i class='bx bx-message me-2'></i> Contact Project Team
+                        </button>
+                        <button class="btn btn-outline-info" onclick="downloadProjectInfo()">
+                            <i class='bx bx-download me-2'></i> Download Project Info
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="requestUpdate()">
+                            <i class='bx bx-refresh me-2'></i> Request Status Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Summary Card -->
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class='bx bx-file me-2'></i> Project Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="project-summary">
+                        <div class="summary-item">
+                            <i class='bx bx-code-alt text-primary'></i>
+                            <div>
+                                <small class="text-muted">Technology</small>
+                                <div><strong>@Model.Stack</strong></div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class='bx bx-calendar text-success'></i>
+                            <div>
+                                <small class="text-muted">Timeline</small>
+                                <div><strong>@((Model.EndDate - Model.StartDate).Days) days</strong></div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class='bx bx-trending-up text-info'></i>
+                            <div>
+                                <small class="text-muted">Progress</small>
+                                <div><strong>@progress% Complete</strong></div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class='bx bx-time @(isOverdue ? "text-danger" : "text-warning")'></i>
+                            <div>
+                                <small class="text-muted">@(isOverdue ? "Overdue" : "Remaining")</small>
+                                <div><strong>@Math.Abs(daysRemaining) days</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+        }
+
+        .progress {
+            border-radius: 0.25rem;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-point {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 3px currentColor;
+        }
+
+        .timeline-content {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 0.25rem;
+        }
+
+        .timeline-item.completed .timeline-content {
+            background: #e8f5e8;
+        }
+
+        /* Progress Circle */
+        .progress-circle {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: conic-gradient(#4e73df 0% calc(var(--percentage) * 1%), #e9ecef calc(var(--percentage) * 1%) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .progress-circle::before {
+                content: '';
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                background: white;
+                border-radius: 50%;
+            }
+
+        .progress-circle-value {
+            position: relative;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #4e73df;
+        }
+
+        /* Project Summary */
+        .project-summary .summary-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .project-summary .summary-item:last-child {
+                border-bottom: none;
+            }
+
+            .project-summary .summary-item i {
+                font-size: 1.5rem;
+                margin-right: 15px;
+                width: 30px;
+            }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+        }
+
+        .table-borderless td, .table-borderless th {
+            border: none;
+            padding: 8px 0;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+                // Set progress circle percentage
+                document.addEventListener('DOMContentLoaded', function() {
+                    const progressCircle = document.querySelector('.progress-circle');
+                    const percentage = @progress;
+                    progressCircle.style.setProperty('--percentage', percentage);
+                });
+
+                function contactTeam() {
+                    // Integrate with your chat system
+                    const chatUrl = '@Url.Action("Index", "Chat")';
+                    if (chatUrl && chatUrl !== '@Url.Action("Index", "Chat")') {
+                        window.location.href = chatUrl;
+                    } else {
+                        alert('Please use the Live Chat feature to contact the project team about: "' + '@Model.ProjectTitle' + '".');
+                    }
+                }
+
+                function downloadProjectInfo() {
+                    const projectInfo = `
+        PROJECT DETAILS
+        ================
+
+        Project ID: #@Model.ProjectId
+        Project Title: @Model.ProjectTitle
+        Technology Stack: @Model.Stack
+        Status: @Model.Status
+        Progress: @progress%
+
+        TIMELINE
+        --------
+        Start Date: @Model.StartDate.ToString("MMMM dd, yyyy")
+        End Date: @Model.EndDate.ToString("MMM dd, yyyy")
+        Duration: @((Model.EndDate - Model.StartDate).Days) days
+        Days @(isOverdue ? "Overdue" : "Remaining"): @Math.Abs(daysRemaining) days
+
+        DESCRIPTION
+        -----------
+        @Model.ProjectDescription
+
+        Generated on: @DateTime.Now.ToString("MMMM dd, yyyy 'at' hh:mm tt")
+                    `.trim();
+
+                    const blob = new Blob([projectInfo], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Project_@(Model.ProjectId)_@(Model.ProjectTitle.Replace(" ", "_"))_Details.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+
+                function requestUpdate() {
+                    alert('Status update request has been sent to the project team for: "' + '@Model.ProjectTitle' + '".');
+                }
+
+                // Auto-hide alerts after 5 seconds
+                document.addEventListener('DOMContentLoaded', function() {
+                    const alerts = document.querySelectorAll('.alert');
+                    alerts.forEach(alert => {
+                        setTimeout(() => {
+                            const bsAlert = new bootstrap.Alert(alert);
+                            bsAlert.close();
+                        }, 5000);
+                    });
+                });
+    </script>
+}

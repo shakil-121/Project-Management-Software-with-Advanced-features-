@@ -1,26 +1,25 @@
 ﻿@model FastPMS.Models.ViewModel.CreateProjectRequest
 @{
+    ViewData["Title"] = "Create Project";
 }
-@* Project create  *@ 
-      <div class="container mt-5">
+
+<div class="container mt-5">
     <h2>Create New Project</h2>
     <form method="post">
-        <!-- Project Title -->
+        <!-- আপনার existing form fields -->
         <div class="form-group pt-3">
             <label for="ProjectTitle">Project Title</label>
-            <input asp-for="ProjectTitle" type="text" class="form-control" id="ProjectTitle" name="ProjectTitle" placeholder="Enter project title" required>
+            <input asp-for="ProjectTitle" type="text" class="form-control" placeholder="Enter project title" required>
         </div>
 
-        <!-- Project Description -->
         <div class="form-group pt-3">
             <label for="ProjectDescription">Project Description</label>
-            <textarea asp-for="ProjectDescription" class="form-control" id="ProjectDescription" name="ProjectDescription" rows="3" placeholder="Enter project descripton" redquired></textarea>
-        </div>                
-                              
-        <!-- Stack (Select) -->
+            <textarea asp-for="ProjectDescription" class="form-control" rows="3" placeholder="Enter project description" required></textarea>
+        </div>
+
         <div class="form-group pt-3">
             <label for="Stack">Technology Stack</label>
-            <select asp-for="Stack" class="form-control" id="Stack" name="Stack" required>
+            <select asp-for="Stack" class="form-control" required>
                 <option value="">Select Stack</option>
                 <option value="MERN">MERN</option>
                 <option value="PHP">PHP</option>
@@ -30,23 +29,20 @@
         </div>
 
         <div class="d-flex pt-3">
-            <!-- Start Date -->
             <div class="form-group">
                 <label for="StartDate">Start Date</label>
-                <input asp-for="StartDate" type="date" class="form-control" id="StartDate" name="StartDate" required>
+                <input asp-for="StartDate" type="date" class="form-control" required>
             </div>
 
-            <!-- End Date -->
             <div class="form-group ps-3">
                 <label for="EndDate">End Date</label>
-                <input asp-for="EndDate" type="date" class="form-control" id="EndDate" name="EndDate" required>
-            </div> 
+                <input asp-for="EndDate" type="date" class="form-control" required>
+            </div>
 
-            <!-- Status --> 
-            <div class="ps-3"> 
-                <label for="Stack">Status</label>
-                <select class="form-control" id="status" name="status" asp-for="Status" required>
-                    <option value="">Select Stack</option>
+            <div class="ps-3">
+                <label for="Status">Status</label>
+                <select class="form-control" id="status" name="Status" asp-for="Status" required>
+                    <option value="">Select Status</option>
                     <option value="Not Started">Not Started</option>
                     <option value="In Progress">In Progress</option>
                     <option value="On hold">On hold</option>
@@ -55,9 +51,18 @@
             </div>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary mt-3">Create Project <i class='bx bxs-folder-plus'></i></button> 
-    </form> 
-     
-</div>
+        <!-- ✅ Client Assignment Section যোগ করুন -->
+        <div class="form-group pt-3">
+            <label class="font-weight-bold">Assign to Clients (Multiple Selection)</label>
+            <select multiple name="SelectedClientIds" class="form-control" size="4">
+                @foreach (var client in ViewBag.Clients)
+                {
+                    <option value="@client.Value">@client.Text</option>
+                }
+            </select>
+            <small class="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple clients</small>
+        </div>
 
+        <button type="submit" class="btn btn-primary mt-3">Create Project <i class='bx bxs-folder-plus'></i></button>
+    </form>
+</div>
