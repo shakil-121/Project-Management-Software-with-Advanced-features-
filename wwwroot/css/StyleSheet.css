@@ -12,7 +12,28 @@
 :root {
     --color-white: #fff;
     --color-black: #000;
-    --color-bg: #e2e2e2;
+    --color-bg: #f4f7fc;
+}
+
+.welcome {
+    background-color: white;
+    box-shadow: 0 .125rem .25rem rgb(0 121 255 / 15%);
+    border-radius: 15px;
+    padding: 10px
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.card-body {
+    padding: 1.5rem;
 }
 
 .dark-mode {
@@ -310,6 +331,7 @@
     min-height: 100vh;
     z-index: 6;
     transition: var(--transition);
+    background-color:#f4f7fc;
 }
 
 .sidebar.expand ~ .home {
@@ -319,11 +341,10 @@
 }
 
 .home p {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--color-black);
     display: inline-block;
-    margin: 20px;
     white-space: nowrap;
 }
 

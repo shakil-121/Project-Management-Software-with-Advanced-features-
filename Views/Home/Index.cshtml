@@ -15,10 +15,12 @@
     <title>FastPMS - Project Management System</title>
     <link rel="stylesheet" href="~/css/StyleSheet.css">
     <script defer src="script.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg mt-2">
+    <nav class="navbar navbar-expand-lg pt-4">
         <div class="container">
             <button class="navbar-toggler"
                     type="button"
@@ -30,7 +32,7 @@
             <div class="collapse navbar-collapse" id="navbarButtonsExample">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <h2><i class='bx bx-analyse'></i> Dashboard</h2>
+                        <h3><i class='bx bx-analyse'></i> Dashboard</h3>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center ms-auto">
@@ -76,13 +78,13 @@
 
     <!-- Welcome Section -->
     <div class="container mt-4">
-        @if (isAuthenticated)
+        @if (isAuthenticated)    
         {
             <!-- Welcome Message for Authenticated Users -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="alert alert-success d-flex align-items-center" role="alert">
-                        <i class='bx bx-check-circle me-2 fs-4'></i>
+            <div class="row welcome mb-4">
+                <div class="col-12">  
+                    <div class="align-items-center" role="alert">  
+                        <i class='bx bx-check-circle me-2 fs-4'></i> 
                         <div>
                             <h5 class="alert-heading mb-1">Welcome back, @User.Identity.Name! 👋</h5>
                             <p class="mb-0">You are logged in as <strong>@userRole</strong>. Here's your project overview.</p>
@@ -233,7 +235,7 @@
             }
             else
             {
-                <!-- For Non-Client Users (Admin/SuperAdmin/TeamMember) - Show Statistics -->
+                <!-- For Non-Client Users (Admin/SuperAdmin/TeamMember) - Show Statistics with Chart -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card bg-primary text-white shadow mb-3">
@@ -253,62 +255,108 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-3">
-                        <div class="card bg-light shadow mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title text-muted mb-1"><i class='bx bx-radio-circle-marked text-secondary'></i> Not Started</h5>
-                                        <p class="card-text fs-4 fw-bold">@ViewBag.NotStartedCount</p>
+                    <!-- Statistics Cards -->
+                    <div class="col-lg-4">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-12 mb-3">
+                                <div class="card bg-light shadow">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title text-muted mb-1"><i class='bx bx-radio-circle-marked text-secondary'></i> Not Started</h5>
+                                                <p class="card-text fs-4 fw-bold">@ViewBag.NotStartedCount</p>
+                                            </div>
+                                            <div class="text-muted">
+                                                <small>Projects</small>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="text-muted">
-                                        <small>Projects</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-12 mb-3">
+                                <div class="card bg-info text-white shadow">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1"><i class='bx bxs-caret-up-circle'></i> In Progress</h5>
+                                                <p class="card-text fs-4 fw-bold">@ViewBag.InProgressCount</p>
+                                            </div>
+                                            <div>
+                                                <small>Active</small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-info text-white shadow mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class='bx bxs-caret-up-circle'></i> In Progress</h5>
-                                        <p class="card-text fs-4 fw-bold">@ViewBag.InProgressCount</p>
+
+                    <div class="col-lg-4">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-12 mb-3">
+                                <div class="card bg-warning shadow">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1"><i class='bx bx-stop-circle'></i> On Hold</h5>
+                                                <p class="card-text fs-4 fw-bold">@ViewBag.OnHoldCount</p>
+                                            </div>
+                                            <div class="text-muted">
+                                                <small>Paused</small>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <small>Active</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-12 mb-3">
+                                <div class="card bg-success text-white shadow">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h5 class="card-title mb-1"><i class='bx bx-check-square'></i> Completed</h5>
+                                                <p class="card-text fs-4 fw-bold">@ViewBag.CompletedCount</p>
+                                            </div>
+                                            <div>
+                                                <small>Finished</small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-warning shadow mb-3">
+
+                    <!-- Chart Section -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class='bx bx-stop-circle'></i> On Hold</h5>
-                                        <p class="card-text fs-4 fw-bold">@ViewBag.OnHoldCount</p>
-                                    </div>
-                                    <div class="text-muted">
-                                        <small>Paused</small>
-                                    </div>
+                                <h5 class="card-title mb-3"><i class='bx bx-chart me-2'></i>Project Status Distribution</h5>
+                                <div style="height: 250px;">
+                                    <canvas id="projectStatusChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white shadow mb-3">
+                </div>
+
+                <!-- Additional Chart Options -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="card-title mb-1"><i class='bx bx-check-square'></i> Completed</h5>
-                                        <p class="card-text fs-4 fw-bold">@ViewBag.CompletedCount</p>
-                                    </div>
-                                    <div>
-                                        <small>Finished</small>
-                                    </div>
+                                <h5 class="card-title mb-3"><i class='bx bx-pie-chart me-2'></i>Project Status Pie Chart</h5>
+                                <div style="height: 300px;">
+                                    <canvas id="projectPieChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3"><i class='bx bx-bar-chart me-2'></i>Project Status Bar Chart</h5>
+                                <div style="height: 300px;">
+                                    <canvas id="projectBarChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -481,7 +529,140 @@
                 </div>
             </div>
         </div>
-    }
+    } 
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart data from ViewBag
+            const projectData = {
+                notStarted: @ViewBag.NotStartedCount,
+                inProgress: @ViewBag.InProgressCount,
+                onHold: @ViewBag.OnHoldCount,
+                completed: @ViewBag.CompletedCount
+            };
+
+            const primaryColor = '#5932EA';
+            const chartColors = [
+                primaryColor,
+                '#36A2EB',
+                '#FF6384',
+                '#4BC0C0'
+            ];
+
+            // Doughnut Chart
+            const doughnutCtx = document.getElementById('projectStatusChart').getContext('2d');
+            new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Not Started', 'In Progress', 'On Hold', 'Completed'],
+                    datasets: [{
+                        data: [projectData.notStarted, projectData.inProgress, projectData.onHold, projectData.completed],
+                        backgroundColor: chartColors,
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Pie Chart
+            const pieCtx = document.getElementById('projectPieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Not Started', 'In Progress', 'On Hold', 'Completed'],
+                    datasets: [{
+                        data: [projectData.notStarted, projectData.inProgress, projectData.onHold, projectData.completed],
+                        backgroundColor: chartColors,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('projectBarChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Not Started', 'In Progress', 'On Hold', 'Completed'],
+                    datasets: [{
+                        label: 'Number of Projects',
+                        data: [projectData.notStarted, projectData.inProgress, projectData.onHold, projectData.completed],
+                        backgroundColor: primaryColor,
+                        borderColor: primaryColor,
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 <script src="~/js/SideBar.js"></script>
 </html>
