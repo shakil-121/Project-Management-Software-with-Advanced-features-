@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using FastPMS.Models.Domain;
 using FastPMS.Services;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace FastPMS.Controllers
 {
@@ -12,11 +13,13 @@ namespace FastPMS.Controllers
     {
         private readonly IChatService _chatService;
         private readonly UserManager<Users> _userManager;
+        private readonly INotificationService _notificationService;
 
-        public ChatController(IChatService chatService, UserManager<Users> userManager)
+        public ChatController(IChatService chatService, UserManager<Users> userManager, INotificationService notificationService)
         {
             _chatService = chatService;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index()
@@ -56,7 +59,16 @@ namespace FastPMS.Controllers
                 if (!await _chatService.CanSendMessageAsync(currentUserRole, receiverRole))
                     return Json(new { success = false, error = "You don't have permission to message this user" });
 
+                // Send message
                 await _chatService.SendMessageAsync(currentUser.Id, receiverId, message);
+
+                // Create notification for receiver
+                await _notificationService.CreateNotificationAsync(
+                    receiverId,
+                    $"New message from {currentUser.FullName ?? currentUser.UserName}",
+                    "message",
+                    currentUser.Id // RelatedId as sender's ID
+                );
 
                 return Json(new { success = true });
             }
@@ -66,12 +78,55 @@ namespace FastPMS.Controllers
             }
         }
 
+        // 🔔 NEW NOTIFICATION METHODS
+
         [HttpGet]
-        public async Task<JsonResult> GetUnreadCount()
+        public async Task<JsonResult> GetNotifications()
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var unreadCounts = await _chatService.GetUnreadCountsAsync(currentUser.Id);
-            return Json(unreadCounts);
+            var notifications = await _notificationService.GetUserNotificationsAsync(currentUser.Id);
+
+            return Json(notifications);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetUnreadNotificationCount()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var count = await _notificationService.GetUnreadCountAsync(currentUser.Id);
+
+            return Json(new { count });
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> MarkNotificationAsRead(string notificationId)
+        {
+            await _notificationService.MarkAsReadAsync(notificationId);
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> MarkAllNotificationsAsRead()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _notificationService.MarkAllAsReadAsync(currentUser.Id);
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TestNotification()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            await _notificationService.CreateNotificationAsync(
+                currentUser.Id,
+                "Test notification from Chat Controller! ✅",
+                "test",
+                currentUser.Id
+            );
+
+            TempData["Message"] = "Test notification created! Check the bell icon.";
+            return RedirectToAction("Index");
         }
     }
 }

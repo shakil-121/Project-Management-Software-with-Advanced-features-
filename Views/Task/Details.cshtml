@@ -1,0 +1,264 @@
+﻿@model FastPMS.Models.Domain.ProjectTask
+
+@{
+    ViewData["Title"] = "Task Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Task Details</h4>
+                    <a href="@Url.Action("AllTasks", "Task")" class="btn btn-outline-secondary btn-sm">
+                        <i class='bx bx-arrow-back me-1'></i>Back to Tasks
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h3 class="text-primary">@Model.Title</h3>
+                            <p class="text-muted">@Model.Description</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge @GetPriorityBadgeClass(Model.Priority) fs-6">
+                                @Model.Priority Priority
+                            </span>
+                            <div class="mt-2">
+                                <span class="badge @GetStatusBadgeClass(Model.Status) fs-6" id="currentStatusBadge">
+                                    @Model.Status
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Task Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Project:</strong></td>
+                                    <td>@Model.Project.ProjectTitle</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Assigned To:</strong></td>
+                                    <td>@Model.AssignedTo.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Assigned By:</strong></td>
+                                    <td>@Model.AssignedBy.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Due Date:</strong></td>
+                                    <td>@Model.DueDate.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Time Information</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Estimated Hours:</strong></td>
+                                    <td>@Model.EstimatedHours hours</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Actual Hours:</strong></td>
+                                    <td>@Model.ActualHours hours</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Created:</strong></td>
+                                    <td>@Model.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                                @if (Model.CompletedDate.HasValue)
+                                {
+                                    <tr>
+                                        <td><strong>Completed:</strong></td>
+                                        <td>@Model.CompletedDate.Value.ToString("MMM dd, yyyy")</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+
+                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                    {
+                        <div class="mt-4 pt-3 border-top">
+                            <h5>Quick Actions</h5>
+                            <div class="btn-group">
+                                <a href="@Url.Action("Edit", "Task", new { id = Model.Id })"
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class='bx bx-edit me-1'></i>Edit Task
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                        onclick="confirmDelete('@Model.Id')">
+                                    <i class='bx bx-trash me-1'></i>Delete Task
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <select class="form-select" id="statusUpdate" data-task-id="@Model.Id">
+                        <option value="Not Started" selected="@(Model.Status == "Not Started")">Not Started</option>
+                        <option value="In Progress" selected="@(Model.Status == "In Progress")">In Progress</option>
+                        <option value="Completed" selected="@(Model.Status == "Completed")">Completed</option>
+                        <option value="On Hold" selected="@(Model.Status == "On Hold")">On Hold</option>
+                    </select>
+                    <button type="button" class="btn btn-primary w-100 mt-3" id="updateStatusBtn" onclick="updateStatus()">
+                        <i class='bx bx-save me-1'></i>Update Status
+                    </button>
+
+                    <!-- Status Update Message -->
+                    <div id="statusMessage" class="mt-2" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Status History (Optional) -->
+            <div class="card shadow mt-3">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">Status History</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <small class="text-muted">Current Status</small>
+                            <div class="d-flex justify-content-between">
+                                <span class="badge @GetStatusBadgeClass(Model.Status)">@Model.Status</span>
+                                <small class="text-muted">@Model.UpdatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function updateStatus() {
+            const select = document.getElementById('statusUpdate');
+            const taskId = select.getAttribute('data-task-id');
+            const newStatus = select.value;
+            const updateBtn = document.getElementById('updateStatusBtn');
+
+            console.log('Updating status:', { taskId, newStatus });
+
+            // Show loading state
+            updateBtn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i>Updating...';
+            updateBtn.disabled = true;
+
+            fetch('/Task/UpdateStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    taskId: taskId,
+                    status: newStatus
+                })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    // Get the error message from response
+                    return response.text().then(text => {
+                        console.log('Error response text:', text);
+                        throw new Error(`Server error: ${response.status} - ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    // Success
+                    Swal.fire({
+                        title: 'Success!',
+                        text: `Status updated to ${newStatus}`,
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    // Update UI immediately
+                    const statusBadge = document.getElementById('currentStatusBadge');
+                    statusBadge.textContent = newStatus;
+                    statusBadge.className = `badge ${getStatusBadgeClass(newStatus)} fs-6`;
+
+                } else {
+                    throw new Error(data.error || 'Update failed');
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.message || 'Failed to update status. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            })
+            .finally(() => {
+                // Reset button state
+                updateBtn.innerHTML = '<i class="bx bx-save me-1"></i>Update Status';
+                updateBtn.disabled = false;
+            });
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'Completed': return 'bg-success';
+                case 'In Progress': return 'bg-primary';
+                case 'On Hold': return 'bg-warning';
+                case 'Not Started': return 'bg-secondary';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Enter key support
+        document.getElementById('statusUpdate').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updateStatus();
+            }
+        });
+    </script>
+}
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority switch
+        {
+            "High" => "bg-danger",
+            "Medium" => "bg-warning",
+            "Low" => "bg-info",
+            "Urgent" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Completed" => "bg-success",
+            "In Progress" => "bg-primary",
+            "On Hold" => "bg-warning",
+            "Not Started" => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+}

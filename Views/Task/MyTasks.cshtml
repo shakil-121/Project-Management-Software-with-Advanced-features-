@@ -1,0 +1,149 @@
+﻿@model List<FastPMS.Models.Domain.ProjectTask>
+
+@{
+    ViewData["Title"] = "My Tasks";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class='bx bx-task me-2 text-primary'></i>My Tasks
+        </h2>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var task in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card task-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-truncate">@task.Title</h5>
+                                <span class="badge @GetPriorityBadgeClass(task.Priority)">
+                                    @task.Priority
+                                </span>
+                            </div>
+
+                            <p class="card-text text-muted small mb-2">
+                                @(string.IsNullOrEmpty(task.Description) ? "No description" :
+                                                        (task.Description.Length > 100 ? task.Description.Substring(0, 100) + "..." : task.Description))
+                    </p>
+
+                            <div class="task-meta mb-3">
+                                <div class="d-flex justify-content-between text-sm text-muted">
+                                    <span><i class='bx bx-calendar me-1'></i>Due: @task.DueDate.ToString("MMM dd, yyyy")</span>
+                                    <span><i class='bx bx-time me-1'></i>@task.EstimatedHours hrs</span>
+                                </div>
+                                <div class="text-sm text-muted mt-1">
+                                    <i class='bx bx-folder me-1'></i>@task.Project.ProjectTitle
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <select class="form-select form-select-sm status-select"
+                                        data-task-id="@task.Id"
+                                        style="width: auto;">
+                                    <option value="Not Started" selected="@(task.Status == "Not Started")">Not Started</option>
+                                    <option value="In Progress" selected="@(task.Status == "In Progress")">In Progress</option>
+                                    <option value="Completed" selected="@(task.Status == "Completed")">Completed</option>
+                                    <option value="On Hold" selected="@(task.Status == "On Hold")">On Hold</option>
+                                </select>
+
+                                <a href="@Url.Action("Details", "Task", new { id = task.Id })"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class='bx bx-show'></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">
+                                Assigned by: @task.AssignedBy.FullName
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class='bx bx-task bx-lg text-muted mb-3'></i>
+            <h4 class="text-muted">No Tasks Assigned</h4>
+            <p class="text-muted">You don't have any tasks assigned to you yet.</p>
+            <a href="@Url.Action("Create", "Task")" class="btn btn-primary mt-2">
+                <i class='bx bx-plus me-1'></i>Create Your First Task
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Status update functionality
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const taskId = this.getAttribute('data-task-id');
+                const newStatus = this.value;
+
+                fetch('/Task/UpdateStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        taskId: taskId,
+                        status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Status updated successfully!', 'success');
+                    } else {
+                        showToast('Error updating status: ' + data.error, 'error');
+                        this.value = this.getAttribute('data-original-status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error updating status', 'error');
+                });
+            });
+        });
+
+        function showToast(message, type) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+}
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority switch
+        {
+            "High" => "bg-danger",
+            "Medium" => "bg-warning",
+            "Low" => "bg-info",
+            "Urgent" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
