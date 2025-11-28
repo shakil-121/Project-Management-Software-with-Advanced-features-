@@ -1,0 +1,371 @@
+﻿@model List<FastPMS.Models.Domain.ProjectTask>
+
+@{
+    ViewData["Title"] = "All Tasks - Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class='bx bx-task me-2'></i>All Tasks - Admin View
+                    </h4>
+                    <span class="badge bg-light text-primary fs-6">
+                        Total: @Model.Count Tasks
+                    </span>
+                </div>
+
+                <!-- Search and Filter Section -->
+                <div class="card-body border-bottom">
+                    <form asp-action="AllTasks" method="get" class="row g-3">
+                        <!-- Search Box -->
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class='bx bx-search'></i>
+                                </span>
+                                <input type="text" name="searchString" class="form-control"
+                                       placeholder="Search by title or description..."
+                                       value="@ViewBag.SearchString">
+                            </div>
+                        </div>
+
+                        <!-- Priority Filter -->
+                        <div class="col-md-3">
+                            <select name="priorityFilter" class="form-select">
+                                <option value="All">All Priorities</option>
+                                @foreach (var priority in ViewBag.Priorities)
+                                {
+                                    if (priority != "All")
+                                    {
+                                        <option value="@priority"
+                                                selected="@(ViewBag.PriorityFilter == priority)">
+                                            @priority Priority
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="col-md-3">
+                            <select name="statusFilter" class="form-select">
+                                <option value="All">All Status</option>
+                                @foreach (var status in ViewBag.Statuses)
+                                {
+                                    if (status != "All")
+                                    {
+                                        <option value="@status"
+                                                selected="@(ViewBag.StatusFilter == status)">
+                                            @status
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-md-2">
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="submit" class="btn btn-success flex-fill">
+                                    <i class='bx bx-filter-alt me-1'></i>Filter
+                                </button>
+                                <a asp-action="AllTasks" class="btn btn-outline-secondary">
+                                    <i class='bx bx-reset'></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tasks Table -->
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Task Title</th>
+                                        <th>Project</th>
+                                        <th>Assigned To</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Due Date</th>
+                                        <th>Created</th>
+                                        <th>Estimated Hours</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var task in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@task.Title</strong>
+                                                @if (!string.IsNullOrEmpty(task.Description))
+                                                {
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        @(task.Description.Length > 50 ?
+                                                                                                    task.Description.Substring(0, 50) + "..." :
+                                                                                                    task.Description)
+                                        </small>
+                                                                                }
+                                            </td>
+                                            <td>@task.Project?.ProjectTitle</td>
+                                            <td>@task.AssignedTo?.FullName</td>
+                                            <td>
+                                                <span class="badge @GetPriorityBadgeClass(task.Priority)">
+                                                    @task.Priority
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @GetStatusBadgeClass(task.Status)">
+                                                    @task.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (task.DueDate < DateTime.Now && task.Status != "Completed")
+                                                {
+                                                    <span class="text-danger fw-bold">
+                                                        <i class='bx bx-time-five me-1'></i>
+                                                        @task.DueDate.ToString("MMM dd, yyyy")
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    @task.DueDate.ToString("MMM dd, yyyy")
+                                                }
+                                            </td>
+                                            <td>@task.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>@task.EstimatedHours hours</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a asp-action="Details" asp-route-id="@task.Id"
+                                                       class="btn btn-info" title="View Details">
+                                                        <i class='bx bx-show'></i>
+                                                    </a>
+                                                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                                                    {
+                                                        <a asp-action="Edit" asp-route-id="@task.Id"
+                                                           class="btn btn-warning" title="Edit Task">
+                                                            <i class='bx bx-edit'></i>
+                                                        </a>
+                                                    }
+                                                    @if (User.IsInRole("SuperAdmin"))
+                                                    {
+                                                        <button type="button" class="btn btn-danger"
+                                                                title="Delete Task"
+                                                                onclick="confirmDelete('@task.Id', '@task.Title')">
+                                                            <i class='bx bx-trash'></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Summary Statistics -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card bg-light">
+                                    <div class="card-body py-3">
+                                        <div class="row text-center">
+                                            <div class="col">
+                                                <h5 class="text-primary mb-1">@Model.Count(t => t.Priority == "High" || t.Priority == "Urgent")</h5>
+                                                <small class="text-muted">High Priority</small>
+                                            </div>
+                                            <div class="col">
+                                                <h5 class="text-warning mb-1">@Model.Count(t => t.Priority == "Medium")</h5>
+                                                <small class="text-muted">Medium Priority</small>
+                                            </div>
+                                            <div class="col">
+                                                <h5 class="text-info mb-1">@Model.Count(t => t.Priority == "Low")</h5>
+                                                <small class="text-muted">Low Priority</small>
+                                            </div>
+                                            <div class="col">
+                                                <h5 class="text-success mb-1">@Model.Count(t => t.Status == "Completed")</h5>
+                                                <small class="text-muted">Completed</small>
+                                            </div>
+                                            <div class="col">
+                                                <h5 class="text-danger mb-1">@Model.Count(t => t.DueDate < DateTime.Now && t.Status != "Completed")</h5>
+                                                <small class="text-muted">Overdue</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class='bx bx-task bx-lg text-muted mb-3'></i>
+                            <h4 class="text-muted">No Tasks Found</h4>
+                            <p class="text-muted">Try adjusting your filters to see more results.</p>
+                            <a asp-action="AllTasks" class="btn btn-primary mt-2">
+                                <i class='bx bx-reset me-1'></i>Clear Filters
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Auto-submit form when filters change
+        document.querySelectorAll('select[name="priorityFilter"], select[name="statusFilter"]').forEach(select => {
+            select.addEventListener('change', function() {
+                this.form.submit();
+            });
+        });
+
+        function confirmDelete(taskId, taskTitle) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete task: "${taskTitle}"`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                background: '#1a1a1a',
+                color: '#fff',
+                iconColor: '#ff6b6b'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create a form and submit for deletion
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '@Url.Action("Delete", "Task")' + '?id=' + taskId;
+
+                    // Add anti-forgery token
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token;
+                    form.appendChild(tokenInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        // Show loading indicator when form submits
+        document.querySelector('form')?.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="bx bx-loader bx-spin me-1"></i>Filtering...';
+                submitBtn.disabled = true;
+            }
+        });
+
+        // Quick status update functionality
+        function updateTaskStatus(taskId, newStatus) {
+            fetch('@Url.Action("UpdateStatus", "Task")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify({
+                    taskId: taskId,
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Task status updated successfully',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: data.error || 'Failed to update status',
+                        icon: 'error',
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Network error occurred',
+                    icon: 'error',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            });
+        }
+
+        // Export functionality (optional)
+        function exportToExcel() {
+            Swal.fire({
+                title: 'Export Tasks',
+                text: 'Do you want to export all tasks to Excel?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Export',
+                cancelButtonText: 'Cancel',
+                background: '#1a1a1a',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Implement export functionality here
+                    window.location.href = '@Url.Action("ExportTasks", "Task")';
+                }
+            });
+        }
+    </script>
+}
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority switch
+        {
+            "High" => "bg-danger",
+            "Medium" => "bg-warning",
+            "Low" => "bg-info",
+            "Urgent" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Completed" => "bg-success",
+            "In Progress" => "bg-primary",
+            "On Hold" => "bg-warning",
+            "Not Started" => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+}

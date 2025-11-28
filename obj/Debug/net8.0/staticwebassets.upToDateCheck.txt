@@ -2,8 +2,10 @@ wwwroot\css\account.css
 wwwroot\css\buttonStyle.css
 wwwroot\css\error.css
 wwwroot\css\site.css
+wwwroot\css\StyleSheet.css
 wwwroot\favicon.ico
 wwwroot\images\pms-logo.png
+wwwroot\js\notification.js
 wwwroot\js\SideBar.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
@@ -63,4 +65,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\StyleSheet.css
