@@ -1,0 +1,147 @@
+﻿@model FastPMS.Models.ViewModel.SubTaskCreateViewModel
+@{
+    ViewData["Title"] = "Create Sub-Task";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class='bx bx-add-to-queue'></i>
+                        Create New Sub-Task
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Success/Error Messages -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class='bx bx-check-circle'></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class='bx bx-error-circle'></i> @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="SubTaskCreate" method="post" id="subTaskForm">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Title" class="form-label">Sub-Task Title *</label>
+                                    <input asp-for="Title" class="form-control" placeholder="Enter sub-task title" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ProjectTaskId" class="form-label">Parent Task *</label>
+                                    <select asp-for="ProjectTaskId" class="form-select">
+                                        <option value="">-- Select Parent Task --</option>
+                                        @if (ViewBag.AvailableTasks != null)
+                                        {
+                                            @foreach (var task in ViewBag.AvailableTasks)
+                                            {
+                                                <option value="@task.Id">@task.Title - @(task.Project?.ProjectTitle ?? "No Project")</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProjectTaskId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="AssignedToId" class="form-label">Assign To *</label>
+                                    <select asp-for="AssignedToId" class="form-select">
+                                        <option value="">-- Select Team Member --</option>
+                                        @if (ViewBag.AvailableTeamMembers != null)
+                                        {
+                                            @foreach (var user in ViewBag.AvailableTeamMembers)
+                                            {
+                                                <option value="@user.Id">@user.FullName (@user.UserName)</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="AssignedToId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DueDate" class="form-label">Due Date *</label>
+                                    <input asp-for="DueDate" type="date" class="form-control" />
+                                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Priority" class="form-label">Priority Level</label>
+                                    <select asp-for="Priority" class="form-select">
+                                        <option value="Low">Low</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="EstimatedHours" class="form-label">Estimated Hours</label>
+                                    <input asp-for="EstimatedHours" type="number" step="0.1" class="form-control" placeholder="e.g., 8.5" />
+                                    <span asp-validation-for="EstimatedHours" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter sub-task description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Additional Notes</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Any additional notes or instructions"></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class='bx bx-save'></i> Create Sub-Task
+                            </button>
+                            <a asp-action="AllSubTasks" class="btn btn-secondary">
+                                <i class='bx bx-arrow-back'></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Set minimum date to today
+            var today = new Date().toISOString().split('T')[0];
+            $('#DueDate').attr('min', today);
+
+            // Set default estimated hours to 1
+            $('#EstimatedHours').val(1);
+        });
+    </script>
+}

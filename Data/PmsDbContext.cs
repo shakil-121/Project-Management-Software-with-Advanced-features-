@@ -3,6 +3,7 @@ using FastPMS.Models.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace FastPMS.Data
 {
@@ -19,8 +20,8 @@ namespace FastPMS.Data
         public DbSet<ProjectUser> ProjectUsers { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ProjectTask> Tasks { get; set; }
-
-
+        public DbSet<SubTask> SubTasks { get; set; }
+        public IEnumerable<object> ProjectTasks { get; internal set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -33,8 +34,38 @@ namespace FastPMS.Data
             });
 
 
+            // SubTask Configuration
+            builder.Entity<SubTask>(entity =>
+            {
+                entity.HasKey(st => st.Id);
 
-            // ✅ ONLY configure NEW tables, don't modify existing ones
+                entity.HasOne(st => st.ProjectTask)
+                      .WithMany(pt => pt.SubTasks)
+                      .HasForeignKey(st => st.ProjectTaskId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(st => st.AssignedTo)
+                      .WithMany()
+                      .HasForeignKey(st => st.AssignedToId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(st => st.AssignedBy)
+                      .WithMany()
+                      .HasForeignKey(st => st.AssignedById)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(st => st.Title).HasMaxLength(200);
+                entity.Property(st => st.Description).HasMaxLength(1000);
+                entity.Property(st => st.Status).HasMaxLength(50);
+                entity.Property(st => st.Priority).HasMaxLength(50);
+                entity.Property(st => st.Notes).HasMaxLength(2000);
+
+                // Decimal precision
+                entity.Property(st => st.EstimatedHours).HasPrecision(10, 2);
+                entity.Property(st => st.ActualHours).HasPrecision(10, 2);
+            });
+
+
             builder.Entity<ProjectTask>(entity =>
             {
                 entity.HasKey(t => t.Id);

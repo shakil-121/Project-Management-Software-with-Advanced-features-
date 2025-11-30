@@ -1,0 +1,156 @@
+﻿@model IEnumerable<FastPMS.Models.Domain.SubTask>
+@{
+    ViewData["Title"] = "All Sub-Tasks";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class='bx bx-list-check'></i>
+                            All Sub-Tasks
+                        </h4>
+                        <a asp-action="SubTaskCreate" class="btn btn-primary">
+                            <i class='bx bx-plus'></i> Create New
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Success/Error Messages -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class='bx bx-check-circle'></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class='bx bx-error-circle'></i> @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class='bx bx-task-x fs-1 text-muted'></i>
+                            <h5 class="text-muted mt-3">No sub-tasks found</h5>
+                            <p class="text-muted">Create your first sub-task to get started.</p>
+                            <a asp-action="SubTaskCreate" class="btn btn-primary mt-2">
+                                <i class='bx bx-plus'></i> Create Sub-Task
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Parent Task</th>
+                                        <th>Assigned To</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Due Date</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var subTask in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@subTask.Title</strong>
+                                                @if (!string.IsNullOrEmpty(subTask.Description))
+                                                {
+                                                    <br />
+                                                    <small class="text-muted">@(subTask.Description.Length > 50 ? subTask.Description.Substring(0, 50) + "..." : subTask.Description)</small>
+                                                }
+                                            </td>
+                                            <td>@subTask.ProjectTask?.Title</td>
+                                            <td>@subTask.AssignedTo?.FullName</td>
+                                            <td>
+                                                <span class="badge @GetStatusBadge(subTask.Status)">
+                                                    @subTask.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @GetPriorityBadge(subTask.Priority)">
+                                                    @subTask.Priority
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="@(subTask.DueDate < DateTime.Now && subTask.Status != "Completed" ? "text-danger fw-bold" : "")">
+                                                    @subTask.DueDate.ToString("MMM dd, yyyy")
+                                                </span>
+                                            </td>
+                                            <td>@subTask.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a asp-action="SubTaskDetails" asp-route-id="@subTask.Id" class="btn btn-outline-primary" title="View Details">
+                                                        <i class='bx bx-show'></i>
+                                                    </a>
+                                                    <a asp-action="SubTaskEdit" asp-route-id="@subTask.Id" class="btn btn-outline-warning" title="Edit">
+                                                        <i class='bx bx-edit'></i>
+                                                    </a>
+                                                    <a asp-action="SubTaskDelete" asp-route-id="@subTask.Id" class="btn btn-outline-danger" title="Delete">
+                                                        <i class='bx bx-trash'></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('table').DataTable({
+                "pageLength": 25,
+                "order": [[6, 'desc']] // Sort by Created Date descending
+            });
+        });
+    </script>
+}
+
+@functions {
+    public string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            "Not Started" => "bg-secondary",
+            "In Progress" => "bg-primary",
+            "Completed" => "bg-success",
+            "On Hold" => "bg-warning",
+            "Cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPriorityBadge(string priority)
+    {
+        return priority switch
+        {
+            "Low" => "bg-secondary",
+            "Medium" => "bg-info",
+            "High" => "bg-warning",
+            "Urgent" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
