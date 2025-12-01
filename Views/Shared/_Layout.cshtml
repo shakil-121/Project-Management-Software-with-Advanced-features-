@@ -50,7 +50,6 @@
             {
                 <!-- Project Management -->
                 <li class="nav-section-header">
-                    <span class="title">Project Management</span>
                 </li>
                 <li>
                     <a asp-controller="AdminProject" asp-action="CreateProject">
@@ -76,7 +75,6 @@
 
                 <!-- Task Management -->
                 <li class="nav-section-header">
-                    <span class="title">Task Management</span>
                 </li>
                 <li>
                     <a asp-controller="Task" asp-action="Create">
@@ -125,12 +123,11 @@
 
                 <!-- Team Management -->
                 <li class="nav-section-header">
-                    <span class="title">Team Management</span>
                 </li>
                 @if (User.IsInRole("SuperAdmin"))
                 {
                     <li>
-                        <a asp-controller="AdminProject" asp-action="AddDev">
+                        <a asp-controller="Account" asp-action="Register">
                             <i class='bx bx-user-plus'></i>
                             <span class="title">Add Developer</span>
                         </a>
@@ -154,7 +151,6 @@
 
                 <!-- Communication -->
                 <li class="nav-section-header">
-                    <span class="title">Communication</span>
                 </li>
                 <li>
                     <a asp-controller="Chat" asp-action="Index">
@@ -222,7 +218,6 @@
                 </li>
 
                 <li class="nav-section-header">
-                    <span class="title">Communication</span>
                 </li>
                 <li>
                     <a asp-controller="Chat" asp-action="Index">
@@ -308,7 +303,6 @@
 
                 <!-- Quick Actions -->
                 <li class="nav-section-header">
-                    <span class="title">Quick Actions</span>
                 </li>
 
                 @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
