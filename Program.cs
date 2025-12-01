@@ -48,10 +48,11 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IDeepSeekService, DeepSeekService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
-
+builder.Services.AddScoped<ISubTaskService, SubTaskService>();
 
 // ✅ REPOSITORIES
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<ISubTaskRepository, SubTaskRepository>();
 // builder.Services.AddScoped<INotificationRepository, NotificationRepository>(); // যদি থাকে
 
 // ✅ AI ASSISTANT SERVICES

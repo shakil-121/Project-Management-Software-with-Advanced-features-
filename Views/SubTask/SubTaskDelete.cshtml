@@ -1,0 +1,126 @@
+﻿@model FastPMS.Models.Domain.SubTask
+@{
+    ViewData["Title"] = "Delete Sub-Task";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class='bx bx-trash'></i>
+                        Delete Sub-Task
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning border-warning">
+                        <h5 class="alert-heading d-flex align-items-center">
+                            <i class='bx bx-error me-2'></i>
+                            Warning!
+                        </h5>
+                        <p class="mb-2">You are about to permanently delete this sub-task. This action cannot be undone.</p>
+                        <p class="mb-0"><strong>All data associated with this sub-task will be lost permanently.</strong></p>
+                    </div>
+
+                    <div class="mb-4 p-3 border rounded bg-light">
+                        <h5 class="text-danger mb-3">"@Model.Title"</h5>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p class="text-muted mb-3">@Model.Description</p>
+                        }
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold text-muted">Parent Task:</label>
+                                    <p class="mb-1">@Model.ProjectTask?.Title</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold text-muted">Assigned To:</label>
+                                    <p class="mb-1">@Model.AssignedTo?.FullName</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold text-muted">Status:</label>
+                                    <br />
+                                    <span class="badge @GetStatusBadgeClass(Model.Status)">@Model.Status</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold text-muted">Due Date:</label>
+                                    <p class="mb-1">@Model.DueDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold text-muted">Priority:</label>
+                                    <br />
+                                    <span class="badge @GetPriorityBadgeClass(Model.Priority)">@Model.Priority</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold text-muted">Created:</label>
+                                    <p class="mb-1">@Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="SubTaskDeleteConfirmed" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex gap-2 justify-content-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-4">
+                                <i class='bx bx-trash'></i> Confirm Delete
+                            </button>
+                            <a asp-action="SubTaskDetails" asp-route-id="@Model.Id" class="btn btn-secondary btn-lg px-4">
+                                <i class='bx bx-arrow-back'></i> Cancel
+                            </a>
+                        </div>
+                        <div class="text-center mt-3">
+                            <small class="text-muted">This action is permanent and cannot be undone.</small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Not Started" => "bg-secondary",
+            "In Progress" => "bg-primary",
+            "Completed" => "bg-success",
+            "On Hold" => "bg-warning",
+            "Cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority switch
+        {
+            "Low" => "bg-secondary",
+            "Medium" => "bg-info",
+            "High" => "bg-warning",
+            "Urgent" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

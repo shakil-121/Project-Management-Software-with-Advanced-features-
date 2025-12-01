@@ -108,6 +108,30 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/ASP.NET Course/PMS/FastPMS/Views/SubTask/AllSubTasks.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViVGFza1xBbGxTdWJUYXNrcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ASP.NET Course/PMS/FastPMS/Views/SubTask/MySubTasks.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViVGFza1xNeVN1YlRhc2tzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ASP.NET Course/PMS/FastPMS/Views/SubTask/SubTaskCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViVGFza1xTdWJUYXNrQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ASP.NET Course/PMS/FastPMS/Views/SubTask/SubTaskDelete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViVGFza1xTdWJUYXNrRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ASP.NET Course/PMS/FastPMS/Views/SubTask/SubTaskDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViVGFza1xTdWJUYXNrRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/ASP.NET Course/PMS/FastPMS/Views/SubTask/SubTaskEdit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViVGFza1xTdWJUYXNrRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/ASP.NET Course/PMS/FastPMS/Views/Task/AllTasks.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGFza1xBbGxUYXNrcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

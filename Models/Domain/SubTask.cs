@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FastPMS.Models.Domain
 {
-    public class ProjectTask
+    public class SubTask
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -18,7 +18,7 @@ namespace FastPMS.Models.Domain
         public string? Description { get; set; }
 
         [Required]
-        public int ProjectId { get; set; }
+        public string ProjectTaskId { get; set; } = string.Empty;
 
         [Required]
         public string AssignedToId { get; set; } = string.Empty;
@@ -45,16 +45,17 @@ namespace FastPMS.Models.Domain
 
         public decimal ActualHours { get; set; }
 
-        [ForeignKey("ProjectId")]
-        public virtual Project? Project { get; set; }
+        [MaxLength(2000)]
+        public string? Notes { get; set; }
+
+        // Navigation properties
+        [ForeignKey("ProjectTaskId")]
+        public virtual ProjectTask? ProjectTask { get; set; }
 
         [ForeignKey("AssignedToId")]
         public virtual Users? AssignedTo { get; set; }
 
         [ForeignKey("AssignedById")]
         public virtual Users? AssignedBy { get; set; }
-
-        // Navigation property for sub-tasks
-        public virtual ICollection<SubTask> SubTasks { get; set; } = new List<SubTask>();
     }
 }

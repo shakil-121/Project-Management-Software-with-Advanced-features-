@@ -396,46 +396,129 @@ namespace FastPMS.Controllers
             return View(developer);
         }
 
-        // ✅ GET: All Developers
+        // ✅ GET: Show Team Members from USERS table WITH Department
         [HttpGet]
-        public async Task<IActionResult> AllDeveloper()
+        public async Task<IActionResult> AllDeveloper(string search = "")
         {
             try
             {
-                var developers = await _developerRepository.GetAllDevelopersAsync();
-                return View(developers);
+                // Exclude deleted users
+                IQueryable<Users> query = _context.Users
+                    .Where(u => u.Role == "TeamMember" && !u.IsDeleted);
+
+                // Apply search filter if provided
+                if (!string.IsNullOrEmpty(search))
+                {
+                    search = search.ToLower();
+                    query = query.Where(u =>
+                        u.FullName.ToLower().Contains(search) ||
+                        u.Email.ToLower().Contains(search) ||
+                        u.UserName.ToLower().Contains(search) ||
+                        (u.Department != null && u.Department.ToLower().Contains(search)));
+                }
+
+                // Get team members
+                var teamMembers = await query
+                    .OrderBy(u => u.FullName)
+                    .ToListAsync();
+
+                // Get counts for statistics
+                var totalUsers = await _context.Users.CountAsync();
+                var teamMemberCount = await _context.Users.CountAsync(u => u.Role == "TeamMember");
+                var adminCount = await _context.Users.CountAsync(u => u.Role == "Admin");
+                var superAdminCount = await _context.Users.CountAsync(u => u.Role == "SuperAdmin");
+                var clientCount = await _context.Users.CountAsync(u => u.Role == "Client");
+
+                // Get unique departments for filter
+                var departments = await _context.Users
+                    .Where(u => u.Role == "TeamMember" && u.Department != null)
+                    .Select(u => u.Department)
+                    .Distinct()
+                    .OrderBy(d => d)
+                    .ToListAsync();
+
+                // Pass data to View
+                ViewBag.TotalUsers = totalUsers;
+                ViewBag.TeamMemberCount = teamMemberCount;
+                ViewBag.AdminCount = adminCount;
+                ViewBag.SuperAdminCount = superAdminCount;
+                ViewBag.ClientCount = clientCount;
+                ViewBag.SearchTerm = search;
+                ViewBag.TotalResults = teamMembers.Count;
+                ViewBag.Departments = departments;
+
+                return View(teamMembers);
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error loading developers: {ex.Message}";
-                return View(new List<Developer>());
+                TempData["ErrorMessage"] = $"Error loading team members: {ex.Message}";
+
+                ViewBag.TeamMemberCount = 0;
+                ViewBag.TotalResults = 0;
+                ViewBag.Departments = new List<string>();
+
+                return View(new List<Users>());
             }
         }
 
-        // ✅ POST: Delete Developer
+        // ✅ POST: Soft Delete Team Member (RECOMMENDED)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DevDelete(int id)
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> DeleteTeamMember(string id)
         {
             try
             {
-                var developer = await _context.Developers.FindAsync(id);
-                if (developer != null)
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser == null)
                 {
-                    await _developerRepository.DevDeleteAsync(id);
-                    TempData["SuccessMessage"] = $"Developer '{developer.Name}' deleted successfully!";
+                    return Json(new { success = false, message = "You are not logged in!" });
+                }
+
+                var userToDelete = await _userManager.FindByIdAsync(id);
+                if (userToDelete == null)
+                {
+                    return Json(new { success = false, message = "User not found!" });
+                }
+
+                if (userToDelete.Id == currentUser.Id)
+                {
+                    return Json(new { success = false, message = "You cannot delete your own account!" });
+                }
+
+                // ✅ SOFT DELETE - Mark as deleted instead of actual delete
+                userToDelete.IsDeleted = true;
+                userToDelete.DeletedAt = DateTime.Now;
+                userToDelete.DeletedBy = currentUser.UserName;
+
+                // Also mark email and username to avoid conflicts
+                userToDelete.Email = $"{userToDelete.Email}_deleted_{DateTime.Now.Ticks}";
+                userToDelete.UserName = $"{userToDelete.UserName}_deleted_{DateTime.Now.Ticks}";
+                userToDelete.NormalizedEmail = userToDelete.Email.ToUpper();
+                userToDelete.NormalizedUserName = userToDelete.UserName.ToUpper();
+
+                var result = await _userManager.UpdateAsync(userToDelete);
+
+                if (result.Succeeded)
+                {
+                    TempData["SuccessMessage"] = $"Team member '{userToDelete.FullName}' has been deactivated!";
+                    return Json(new
+                    {
+                        success = true,
+                        message = $"Team member '{userToDelete.FullName}' has been deactivated!",
+                        userId = id
+                    });
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Developer not found!";
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    return Json(new { success = false, message = $"Error: {errors}" });
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error deleting developer: {ex.Message}";
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
-
-            return RedirectToAction("AllDeveloper");
         }
 
         // ✅ GET: Client Management

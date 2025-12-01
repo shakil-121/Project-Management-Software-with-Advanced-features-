@@ -1,21 +1,80 @@
 ﻿<!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> 
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/css/account.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #595cff !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .account-layout {
+            background-color: #595cff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .account-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+        }
+
+        /* ✅ Logo Styling */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 180px;
+            height: auto;
+        }
+
+        .account-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* Rest of your existing styles... */
+    </style>
 </head>
 <body>
-    <div>
-        @RenderBody()
-    </div>
+    <div class="account-layout">
+        <div class="account-card">
+            <!-- ✅ Logo Section -->
+            <div class="logo-container">
+                <!-- Option 1: Image Logo -->
+                <img src="~/images/pms-logo.png" alt="FAST PMS Logo" class="logo" />
+            </div>
 
+            <!-- Main Content -->
+            @RenderBody()
+
+            <!-- Footer -->
+            <div class="account-footer">
+                <p>&copy; 2025 MD.Shahadat Hossain. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

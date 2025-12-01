@@ -1,0 +1,166 @@
+﻿@model IEnumerable<FastPMS.Models.Domain.SubTask>
+@{
+    ViewData["Title"] = "My Sub-Tasks";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class='bx bx-task'></i>
+                        My Sub-Tasks
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class='bx bx-task-x fs-1 text-muted'></i>
+                            <h5 class="text-muted mt-3">No sub-tasks assigned to you</h5>
+                            <p class="text-muted">You'll see your sub-tasks here when they are assigned.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="mySubTasksTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Parent Task</th>
+                                        <th>Project</th>
+                                        <th>Due Date</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Estimated Hours</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var subTask in Model)
+                                    {
+                                        <tr class="@(subTask.Status == "Completed" ? "table-success" : "")">
+                                            <td>
+                                                <strong>@subTask.Title</strong>
+                                                @if (!string.IsNullOrEmpty(subTask.Description))
+                                                {
+                                                    <br />
+                                                    <small class="text-muted">@(subTask.Description.Length > 50 ? subTask.Description.Substring(0, 50) + "..." : subTask.Description)</small>
+                                                }
+                                            </td>
+                                            <td>@subTask.ProjectTask?.Title</td>
+                                            <td>@subTask.ProjectTask?.Project?.ProjectTitle</td>
+                                            <td>
+                                                <span class="@(subTask.DueDate < DateTime.Now && subTask.Status != "Completed" ? "text-danger fw-bold" : "")">
+                                                    @subTask.DueDate.ToString("MMM dd, yyyy")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @GetPriorityBadgeClass(subTask.Priority)">
+                                                    @subTask.Priority
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <select class="form-select form-select-sm status-dropdown" data-subtask-id="@subTask.Id" style="width: 130px;">
+                                                    <option value="Not Started" selected="@(subTask.Status == "Not Started")">Not Started</option>
+                                                    <option value="In Progress" selected="@(subTask.Status == "In Progress")">In Progress</option>
+                                                    <option value="Completed" selected="@(subTask.Status == "Completed")">Completed</option>
+                                                    <option value="On Hold" selected="@(subTask.Status == "On Hold")">On Hold</option>
+                                                    <option value="Cancelled" selected="@(subTask.Status == "Cancelled")">Cancelled</option>
+                                                </select>
+                                            </td>
+                                            <td>@subTask.EstimatedHours hours</td>
+                                            <td>
+                                                <a asp-action="SubTaskDetails" asp-route-id="@subTask.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class='bx bx-show'></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            $('#mySubTasksTable').DataTable({
+                "pageLength": 25,
+                "order": [[3, 'asc']] // Sort by Due Date ascending
+            });
+
+            // Status update functionality
+            $('.status-dropdown').change(function() {
+                var subTaskId = $(this).data('subtask-id');
+                var newStatus = $(this).val();
+
+                $.ajax({
+                    url: '@Url.Action("SubTaskUpdateStatus", "SubTask")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        subTaskId: subTaskId,
+                        status: newStatus
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('Success', response.message, 'success');
+
+                            var row = $('[data-subtask-id="' + subTaskId + '"]').closest('tr');
+                            if (newStatus === 'Completed') {
+                                row.addClass('table-success');
+                            } else {
+                                row.removeClass('table-success');
+                            }
+                        } else {
+                            showToast('Error', response.error, 'error');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'Failed to update status', 'error');
+                    }
+                });
+            });
+
+            function showToast(title, message, type) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
+
+                Toast.fire({
+                    icon: type,
+                    title: title,
+                    text: message
+                });
+            }
+        });
+    </script>
+}
+
+@functions {
+    public string GetPriorityBadgeClass(string priority)
+    {
+        return priority switch
+        {
+            "Low" => "bg-secondary",
+            "Medium" => "bg-primary",
+            "High" => "bg-warning",
+            "Urgent" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

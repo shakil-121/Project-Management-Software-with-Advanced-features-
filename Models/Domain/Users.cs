@@ -12,7 +12,9 @@ namespace FastPMS.Models.Domain
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
         public virtual ICollection<ProjectUser> ProjectUsers { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-
-
+        public bool IsActive { get; internal set; }
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+        public string? DeletedBy { get; set; }
     }
 }

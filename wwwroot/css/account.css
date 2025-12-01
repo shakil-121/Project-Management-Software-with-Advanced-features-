@@ -1,5 +1,14 @@
 ﻿@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
+.account-layout {
+    background-color: #595cff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
 ﻿.account-container {
     background-size: cover;
     background-position: center;
@@ -9,6 +18,7 @@
     align-items: center;
     min-height: 100vh;
     padding: 2rem 0;
+    
 }
 
 .account-box {
