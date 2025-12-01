@@ -98,6 +98,10 @@ namespace FastPMS.Controllers
                 TempData["ErrorMessage"] = $"Error loading profile: {ex.Message}";
                 return RedirectToAction("MyProjectStatus");
             }
-        }
+        } 
+
+
+
+
     }
 }

@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Reports & Analytics";
+    Layout = "_Layout";
+}
+
+@using FastPMS.Data
+@using Microsoft.EntityFrameworkCore
+@inject PmsDbContext _context
+
+@{
+    // ✅ SYNCHRONOUS ভাবে Data Fetch করবো - Async না
+    var totalUsers = _context.Users.Count();
+    var totalClients = _context.Users.Count(u => u.Role == "Client");
+    var totalTeamMembers = _context.Users.Count(u => u.Role == "TeamMember");
+    var totalAdmins = _context.Users.Count(u => u.Role == "Admin");
+    var totalSuperAdmins = _context.Users.Count(u => u.Role == "SuperAdmin");
+
+    var totalProjects = _context.Projects.Count();
+    var completedProjects = _context.Projects.Count(p => p.Status == "Completed");
+    var inProgressProjects = _context.Projects.Count(p => p.Status == "In Progress");
+    var notStartedProjects = _context.Projects.Count(p => p.Status == "Not Started");
+
+    var totalTasks = _context.Tasks.Count();
+    var completedTasks = _context.Tasks.Count(t => t.Status == "Completed");
+    var pendingTasks = _context.Tasks.Count(t => t.Status == "Pending" || t.Status == "Assigned");
+
+    // Chart Data Prepare
+    var projectStatusData = new[]
+    {
+        new { Status = "Completed", Count = completedProjects, Color = "#10b981" },
+        new { Status = "In Progress", Count = inProgressProjects, Color = "#f59e0b" },
+        new { Status = "Not Started", Count = notStartedProjects, Color = "#6b7280" }
+    };
+
+    var userRoleData = new[]
+    {
+        new { Role = "Clients", Count = totalClients, Color = "#3b82f6" },
+        new { Role = "Team Members", Count = totalTeamMembers, Color = "#8b5cf6" },
+        new { Role = "Admins", Count = totalAdmins, Color = "#10b981" },
+        new { Role = "Super Admins", Count = totalSuperAdmins, Color = "#f59e0b" }
+    };
+
+    var taskStatusData = new[]
+    {
+        new { Status = "Completed", Count = completedTasks, Color = "#10b981" },
+        new { Status = "Pending", Count = pendingTasks, Color = "#f59e0b" }
+    };
+}

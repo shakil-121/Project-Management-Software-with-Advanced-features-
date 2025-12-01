@@ -141,13 +141,7 @@
                     </a>
                     <span class="tooltip">Manage Team</span>
                 </li>
-                <li>
-                    <a asp-controller="Project" asp-action="Assign">
-                        <i class='bx bx-user-check'></i>
-                        <span class="title">Assign Project</span>
-                    </a>
-                    <span class="tooltip">Assign Project</span>
-                </li>
+                
 
                 <!-- Communication -->
                 <li class="nav-section-header">
@@ -171,23 +165,6 @@
             <!-- TEAM MEMBER MENU -->
             @if (User.IsInRole("TeamMember"))
             {
-                <li class="nav-section-header">
-                    <span class="title">My Work</span>
-                </li>
-                <li>
-                    <a asp-controller="Project" asp-action="MyProjects">
-                        <i class='bx bx-folder'></i>
-                        <span class="title">My Projects</span>
-                        @{
-                            var myProjectCount = ViewBag.MyProjectCount ?? 0;
-                            if (myProjectCount > 0)
-                            {
-                                <span class="badge bg-primary badge-sm">@myProjectCount</span>
-                            }
-                        }
-                    </a>
-                    <span class="tooltip">My Projects</span>
-                </li>
                 <li>
                     <a asp-controller="Task" asp-action="MyTasks">
                         <i class='bx bx-task'></i>
@@ -308,7 +285,7 @@
                 @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                 {
                     <li>
-                        <a asp-controller="Dashboard" asp-action="Reports">
+                        <a asp-controller="AdminProject" asp-action="Reports">
                             <i class='bx bx-bar-chart-alt'></i>
                             <span class="title">Reports</span>
                         </a>
@@ -316,14 +293,6 @@
                     </li>
                 }
 
-                <li>
-                    <a asp-controller="Notification" asp-action="Index">
-                        <i class='bx bx-bell'></i>
-                        <span class="title">Notifications</span>
-                        <span class="badge bg-danger badge-sm" id="notificationBadge" style="display: none;">0</span>
-                    </a>
-                    <span class="tooltip">Notifications</span>
-                </li>
 
                 <!-- Logout Button -->
                 <li class="logout-section">
