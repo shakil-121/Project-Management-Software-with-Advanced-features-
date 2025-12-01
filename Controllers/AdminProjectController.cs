@@ -579,5 +579,15 @@ namespace FastPMS.Controllers
                 { "Completed", projects.Count(p => p.Status == "Completed") }
             };
         }
+        // ✅ GET: Reports Dashboard - SIMPLE ACTION
+        [HttpGet]
+        public IActionResult Reports()
+        {
+            // শুধু View return করবো, View-এই data fetch করবো
+            return View();
+        }
+
+
+
     }
 }
